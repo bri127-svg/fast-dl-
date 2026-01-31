@@ -357,10 +357,11 @@ mostrar_menu() {
   echo -e "  \e[1;34m› [9]\e[0m Gestión de Puertos"
   echo -e "  \e[1;35m› [10]\e[0m Gestión Avanzada (Backup/Usuarios)"
   echo -e "  \e[1;35m› [11]\e[0m Gestión de Temas (NookTheme)"
+  echo -e "  \e[1;35m› [12]\e[0m Instalar Tema Nebula para Ubot"
   echo ""
   echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
   echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
-  echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-11]: "
+  echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-12]: "
 }
 
 # ==============================
@@ -3806,7 +3807,7 @@ while true; do
       menu_nooktheme
       ;;
     12)
-      menu_nebula
+    install_nebula_theme
       ;;
     0)
       clear
