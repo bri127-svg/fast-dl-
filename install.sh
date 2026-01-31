@@ -354,13 +354,14 @@ mostrar_menu() {
   echo -e "  \e[1;34m› [9]\e[0m Gestión de Puertos"
   echo -e "  \e[1;35m› [10]\e[0m Gestión Avanzada (Backup/Usuarios)"
   echo -e "  \e[1;35m› [11]\e[0m Gestión de Temas (NookTheme)"
-  echo -e "  \e[1;35m› [12]\e[0m Ejecutar Script Remoto Autenticado"
+  echo -e "  \e[1;35m› [12]\e[0m Ejecutar Comandos para intalacion de el nebula"
   echo -e "  \e[1;35m› [13]\e[0m Instalar Addon RevIActyl"
   echo -e "  \e[1;35m› [14]\e[0m Limpiador de Themes (Restaurar Panel)"
+  echo -e "  \e[1;35m› [15]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
 
   echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
   echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
-  echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-14]: "
+  echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-15]: "
 }
 
 # ==============================
@@ -2911,6 +2912,49 @@ cerrar_puerto() {
   echo "   Total eliminaciones: 🔥 $((puertos_tcp_cerrados + puertos_udp_cerrados))"
 
   echo ""
+  read -p "Presiona Enter para continuar..."
+}
+
+# =====================================================
+# INSTALADOR DE ADDONS .blueprint (GENÉRICO)
+# =====================================================
+instalar_blueprint_addon() {
+  clear
+  echo "======================================"
+  echo "     INSTALADOR ADDON BLUEPRINT"
+  echo "======================================"
+  echo ""
+
+  PTERO_DIR="/var/www/pterodactyl"
+
+  if [ ! -d "$PTERO_DIR" ]; then
+    log_err "Pterodactyl no está instalado"
+    return
+  fi
+
+  if ! command -v blueprint >/dev/null 2>&1; then
+    log_err "Blueprint Framework no está instalado"
+    return
+  fi
+
+  read -p "Ruta del archivo .blueprint (ej: /home/user/addon.blueprint): " BP_FILE
+
+  if [ ! -f "$BP_FILE" ]; then
+    log_err "El archivo .blueprint no existe"
+    return
+  fi
+
+  log_info "Copiando addon a Pterodactyl..."
+  cp "$BP_FILE" "$PTERO_DIR"
+
+  BP_NAME="$(basename "$BP_FILE")"
+
+  cd "$PTERO_DIR" || return
+
+  log_info "Instalando addon Blueprint: $BP_NAME"
+  blueprint -install "$BP_NAME" || log_err "Error instalando addon"
+
+  log_ok "Addon Blueprint instalado correctamente"
   read -p "Presiona Enter para continuar..."
 }
 
