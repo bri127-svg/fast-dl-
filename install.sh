@@ -355,9 +355,12 @@ mostrar_menu() {
   echo -e "  \e[1;35m› [10]\e[0m Gestión Avanzada (Backup/Usuarios)"
   echo -e "  \e[1;35m› [11]\e[0m Gestión de Temas (NookTheme)"
   echo -e "  \e[1;35m› [12]\e[0m Ejecutar Script Remoto Autenticado"
+  echo -e "  \e[1;35m› [13]\e[0m Instalar Addon RevIActyl"
+  echo -e "  \e[1;35m› [14]\e[0m Limpiador de Themes (Restaurar Panel)"
+
   echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
   echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
-  echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-12]: "
+  echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-14]: "
 }
 
 # ==============================
@@ -2508,7 +2511,120 @@ ejecutar_script_remoto() {
     log_err "Fallo de autenticación o descarga"
   fi
 }
+# =====================================================
+# LIMPIADOR GLOBAL DE THEMES (SAFE CLEAN)
+# =====================================================
+limpiar_themes() {
+  log_warn "LIMPIADOR DE THEMES – RESTAURACIÓN LIMPIA DEL PANEL"
+  echo ""
+  echo "⚠️  Esto eliminará TODOS los themes:"
+  echo "   - Nebula"
+  echo "   - NookTheme"
+  echo "   - Blueprint (themes)"
+  echo "   - Modificaciones frontend"
+  echo ""
 
+  read -p "¿Seguro que deseas continuar? [y/N]: " confirm
+  [[ "$confirm" != "y" && "$confirm" != "Y" ]] && return
+
+  PTERO_DIR="/var/www/pterodactyl"
+
+  if [ ! -d "$PTERO_DIR" ]; then
+    log_err "Pterodactyl no está instalado"
+    return
+  fi
+
+  cd "$PTERO_DIR" || return
+
+  # 1. Limpiar Blueprint
+  if command -v blueprint >/dev/null 2>&1; then
+    log_info "Limpiando Blueprint..."
+    blueprint -clear 2>/dev/null || true
+  fi
+
+  # 2. Eliminar restos comunes de themes
+  log_info "Eliminando restos de themes..."
+  rm -rf \
+    resources/scripts/MinecraftPurpleTheme.css \
+    resources/scripts/NookTheme.css \
+    resources/scripts/Nebula.css \
+    resources/scripts/themes \
+    resources/scripts/custom \
+    public/themes \
+    public/css/custom \
+    storage/framework/views/*
+
+  # 3. Restaurar panel oficial
+  log_info "Restaurando panel oficial..."
+  curl -sL https://github.com/pterodactyl/panel/releases/latest/download/panel.tar.gz | tar -xz
+
+  # 4. Permisos
+  chmod -R 755 storage/* bootstrap/cache
+
+  # 5. Reinstalar dependencias
+  log_info "Reinstalando dependencias..."
+  COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
+
+  yarn install
+  yarn build:production
+  php artisan optimize:clear
+
+  # 6. Ownership
+  chown -R www-data:www-data "$PTERO_DIR"
+
+  # 7. Reiniciar servicios
+  systemctl restart pteroq.service nginx >/dev/null 2>&1 || true
+
+  log_ok "Themes eliminados y panel restaurado correctamente"
+  read -p "Presiona Enter para continuar..."
+}
+
+# =====================================================
+# ADDON REVIACTYL – PANEL
+# =====================================================
+instalar_reviactyl() {
+  log_warn "Instalando addon RevIActyl (esto reemplazará el panel actual)..."
+
+  read -p "¿Seguro que deseas continuar? [y/N]: " confirm
+  [[ "$confirm" != "y" && "$confirm" != "Y" ]] && return
+
+  PTERO_DIR="/var/www/pterodactyl"
+
+  if [ ! -d "$PTERO_DIR" ]; then
+    log_err "Pterodactyl no está instalado"
+    return
+  fi
+
+  cd "$PTERO_DIR" || return
+
+  log_info "Limpiando panel actual..."
+  rm -rf ./*
+
+  log_info "Descargando panel RevIActyl..."
+  curl -Lo panel.tar.gz https://github.com/reviactyl/panel/releases/latest/download/panel.tar.gz
+
+  log_info "Extrayendo panel..."
+  tar -xzvf panel.tar.gz
+  rm -f panel.tar.gz
+
+  log_info "Asignando permisos..."
+  chmod -R 755 storage/* bootstrap/cache/
+
+  log_info "Instalando dependencias PHP (Composer)..."
+  COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
+
+  log_info "Migrando base de datos..."
+  php artisan migrate --seed --force
+
+  log_info "Corrigiendo ownership..."
+  chown -R www-data:www-data "$PTERO_DIR"/*
+
+  log_info "Reiniciando servicios..."
+  systemctl restart pteroq.service
+
+  log_ok "RevIActyl instalado correctamente"
+  read -p "Presiona Enter para continuar..."
+}
 
 # ==============================
 # GESTIÓN DE PUERTOS
@@ -3777,7 +3893,14 @@ while true; do
       ;;
       12)
       ejecutar_script_remoto
-      ;;
+      ;; 
+     13)
+     instalar_reviactyl
+     ;;
+     14)
+    limpiar_themes
+     ;;
+
     0)
       clear
       echo "Saliendo..."
