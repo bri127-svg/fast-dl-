@@ -2926,6 +2926,8 @@ instalar_blueprint_addon() {
   echo ""
 
   PTERO_DIR="/var/www/pterodactyl"
+  REPO_RAW="https://raw.githubusercontent.com/bri127-svg/fast-dl-/main"
+  BP_FILE_NAME="serverbackgrounds.blueprint"
 
   if [ ! -d "$PTERO_DIR" ]; then
     log_err "Pterodactyl no está instalado"
@@ -2937,27 +2939,23 @@ instalar_blueprint_addon() {
     return
   fi
 
-  read -p "Ruta del archivo .blueprint (ej: /home/user/addon.blueprint): " BP_FILE
-
-  if [ ! -f "$BP_FILE" ]; then
-    log_err "El archivo .blueprint no existe"
-    return
-  fi
-
-  log_info "Copiando addon a Pterodactyl..."
-  cp "$BP_FILE" "$PTERO_DIR"
-
-  BP_NAME="$(basename "$BP_FILE")"
-
   cd "$PTERO_DIR" || return
 
-  log_info "Instalando addon Blueprint: $BP_NAME"
-  blueprint -install "$BP_NAME" || log_err "Error instalando addon"
+  log_info "Descargando addon Blueprint desde GitHub..."
+  curl -fsSL "$REPO_RAW/$BP_FILE_NAME" -o "$BP_FILE_NAME" || {
+    log_err "No se pudo descargar el archivo .blueprint"
+    return
+  }
+
+  log_info "Instalando addon Blueprint: $BP_FILE_NAME"
+  blueprint -install "$BP_FILE_NAME" || {
+    log_err "Error instalando el addon Blueprint"
+    return
+  }
 
   log_ok "Addon Blueprint instalado correctamente"
   read -p "Presiona Enter para continuar..."
 }
-
 # ==============================
 # GESTIÓN AVANZADA (BACKUP/USUARIOS)
 # ==============================
