@@ -1,0 +1,143 @@
+#  Guía FastDL con Nginx + Pterodactyl (Optimizada y Ordenada)
+
+Esta guía explica **paso a paso** cómo configurar **FastDL** usando **Nginx** en un servidor con **Pterodactyl**, de forma clara y profesional.
+
+---
+
+## 🖥️ Paso 1: Usar la terminal (CMD / SSH)
+
+Conéctate a tu VPS como **root** usando SSH o la consola del proveedor.
+
+---
+
+## 👤 Paso 2: Asignar el usuario `www-data` al grupo `pterodactyl`
+
+Esto permite que Nginx tenga acceso correcto a los archivos de los servidores.
+
+```cmd 
+gpasswd -a www-data pterodactyl
+```
+
+> 🔎 **Nota:** Puede que necesites cerrar sesión y volver a entrar para que los cambios tengan efecto.
+
+---
+
+## 🔐 Paso 3: Asignar permisos a los directorios de Pterodactyl
+
+Damos permisos de **lectura y ejecución** a las carpetas necesarias para el FastDL.
+
+```bash
+chmod 755 /var/lib/pterodactyl/
+chmod 755 /var/lib/pterodactyl/volumes/
+```
+
+---
+
+## ⚙️ Paso 4: Crear y configurar el archivo FastDL en Nginx
+
+Edita el archivo de configuración usando **nano**:
+
+```bash
+nano /etc/nginx/sites-available/fastdl.conf
+```
+
+### 📄 Contenido del archivo `fastdl.conf`
+
+Pega **exactamente** esta configuración dentro del nano:
+
+```nginx
+server {
+    listen 80;
+    listen [::]:80;
+
+    root /var/lib/pterodactyl/volumes;
+    index index.html;
+
+    server_name example.website.ro;
+
+    location / {
+        # Intenta servir el archivo, luego el directorio, si no existe devuelve 404
+        try_files $uri $uri/ =404;
+
+        # Muestra los archivos (opcional, útil para pruebas)
+        autoindex on;
+    }
+
+    # Bloquea la descarga de archivos sensibles
+    location ~\.(sma|amxx|sp|smx|cfg|ini|log|bak|dat|sql|sq3|so|dll|php|zip|rar|jar|sh)$ {
+        return 403;
+    }
+
+    # Bloquea carpetas críticas
+    location ~ /(addons|cfg|logs) {
+        deny all;
+    }
+}
+```
+
+### 📝 Cambia esto antes de guardar:
+
+* Reemplaza:
+
+  ```
+  server_name example.website.ro;
+  ```
+
+  por tu dominio o IP, por ejemplo:
+
+  ```
+  server_name fastdl.midominio.com;
+  ```
+
+Guarda y cierra:
+
+* **CTRL + O** → Enter
+* **CTRL + X**
+
+---
+
+## 🔗 Paso 5: Activar la configuración de FastDL
+
+Crea el enlace simbólico para que Nginx reconozca el sitio:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/fastdl.conf /etc/nginx/sites-enabled/
+```
+
+---
+
+## 🔄 Paso 6: Reiniciar Nginx
+
+Aplica los cambios reiniciando el servicio:
+
+```bash
+systemctl restart nginx
+```
+
+---
+
+## ✅ Paso 7: Verificación (Opcional pero recomendado)
+
+Puedes comprobar que Nginx no tenga errores con:
+
+```bash
+nginx -t
+```
+
+Si todo está correcto verás:
+
+```
+syntax is ok
+test is successful
+```
+
+---
+
+## 🚀 Listo
+
+Tu **FastDL** ya está configurado y funcionando con **Pterodactyl + Nginx**.
+
+Si quieres:
+
+* Configurar **FastDL para CS 1.6 / CS:GO / SA-MP**
+* Usarlo con **HTTPS (SSL)
