@@ -3944,6 +3944,9 @@ while true; do
      14)
     limpiar_themes
      ;;
+    15)
+    instalar_blueprint_addon
+    ;;
 
     0)
       clear
