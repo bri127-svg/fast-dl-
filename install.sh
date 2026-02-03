@@ -359,7 +359,7 @@ mostrar_menu() {
   echo -e "  \e[1;35m› [13]\e[0m Instalar Addon RevIActyl"
   echo -e "  \e[1;35m› [14]\e[0m Limpiador de Themes (Restaurar Panel)"
   echo -e "  \e[1;35m› [15]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
-
+  echo -e "  \e[1;35m› [16]\e[0m Instalar Tema DarkWolf para phpMyAdmin"
   echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
   echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
   echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-15]: "
@@ -1918,7 +1918,53 @@ fix_mariadb_bind_address() {
     log_info "bind-address ya está correctamente configurado."
   fi
 }
+install_phpmyadmin_theme_darkwolf() {
 
+    THEME_URL="https://files.phpmyadmin.net/themes/darkwolf/5.2/darkwolf-5.2.zip"
+    THEME_NAME="darkwolf-5.2"
+    PMA_PATH="${1:-/usr/share/phpmyadmin}"
+
+    echo "=========================================="
+    echo " Instalando tema Darkwolf para phpMyAdmin "
+    echo "=========================================="
+
+    # Verificar phpMyAdmin
+    if [ ! -d "$PMA_PATH" ]; then
+        echo "❌ phpMyAdmin no encontrado en: $PMA_PATH"
+        return 1
+    fi
+
+    # Dependencias
+    for cmd in wget unzip; do
+        if ! command -v $cmd &>/dev/null; then
+            echo "❌ Falta dependencia: $cmd"
+            return 1
+        fi
+    done
+
+    # Descargar
+    echo "📥 Descargando tema..."
+    wget -q "$THEME_URL" -O /tmp/${THEME_NAME}.zip || return 1
+
+    # Extraer
+    echo "📦 Extrayendo..."
+    unzip -oq /tmp/${THEME_NAME}.zip -d /tmp || return 1
+
+    # Instalar
+    echo "📂 Instalando en $PMA_PATH/themes/"
+    mkdir -p "$PMA_PATH/themes"
+    cp -r "/tmp/$THEME_NAME" "$PMA_PATH/themes/" || return 1
+
+    # Permisos
+    chown -R www-data:www-data "$PMA_PATH/themes/$THEME_NAME"
+    chmod -R 755 "$PMA_PATH/themes/$THEME_NAME"
+
+    # Limpieza
+    rm -rf "/tmp/$THEME_NAME" "/tmp/${THEME_NAME}.zip"
+
+    echo "✅ Tema Darkwolf instalado correctamente"
+    return 0
+}
 # ==============================
 # LIMPIEZA TOTAL DEL VPS (COMPLETA - BORRA TODO)
 # ==============================
@@ -3946,7 +3992,9 @@ while true; do
     15)
     instalar_blueprint_addon
     ;;
-
+    16)
+    install_phpmyadmin_theme_darkwolf
+    ;;
     0)
       clear
       echo "Saliendo..."
