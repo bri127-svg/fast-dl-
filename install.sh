@@ -1918,53 +1918,77 @@ fix_mariadb_bind_address() {
     log_info "bind-address ya está correctamente configurado."
   fi
 }
-install_phpmyadmin_theme_darkwolf() {
+install_phpmyadmin_darkwolf_theme() {
 
-    THEME_URL="https://files.phpmyadmin.net/themes/darkwolf/5.2/darkwolf-5.2.zip"
-    THEME_NAME="darkwolf-5.2"
-    PMA_PATH="${1:-/usr/share/phpmyadmin}"
+  THEME_URL="https://files.phpmyadmin.net/themes/darkwolf/5.2/darkwolf-5.2.zip"
+  THEME_FOLDER="darkwolf-5.2"
+  TMP_DIR="/tmp/pma_darkwolf"
 
-    echo "=========================================="
-    echo " Instalando tema Darkwolf para phpMyAdmin "
-    echo "=========================================="
+  echo ""
+  echo "🎨 Instalando tema Darkwolf para phpMyAdmin..."
 
-    # Verificar phpMyAdmin
-    if [ ! -d "$PMA_PATH" ]; then
-        echo "❌ phpMyAdmin no encontrado en: $PMA_PATH"
-        return 1
-    fi
+  # Detectar phpMyAdmin
+  if [ -d "/var/www/pterodactyl/public/pma" ]; then
+    PMA_PATH="/var/www/pterodactyl/public/pma"
+  elif [ -d "/usr/share/phpmyadmin" ]; then
+    PMA_PATH="/usr/share/phpmyadmin"
+  elif [ -d "/var/www/html/phpmyadmin" ]; then
+    PMA_PATH="/var/www/html/phpmyadmin"
+  else
+    echo "❌ phpMyAdmin NO está instalado. Tema cancelado."
+    return 1
+  fi
 
-    # Dependencias
-    for cmd in wget unzip; do
-        if ! command -v $cmd &>/dev/null; then
-            echo "❌ Falta dependencia: $cmd"
-            return 1
-        fi
-    done
+  echo "✔ phpMyAdmin detectado en: $PMA_PATH"
 
-    # Descargar
-    echo "📥 Descargando tema..."
-    wget -q "$THEME_URL" -O /tmp/${THEME_NAME}.zip || return 1
+  # Verificar PHP
+  if ! command -v php >/dev/null 2>&1; then
+    echo "❌ PHP no está instalado. Tema cancelado."
+    return 1
+  fi
 
-    # Extraer
-    echo "📦 Extrayendo..."
-    unzip -oq /tmp/${THEME_NAME}.zip -d /tmp || return 1
+  # Dependencias
+  apt-get update -y >/dev/null 2>&1
+  apt-get install -y unzip wget >/dev/null 2>&1
 
-    # Instalar
-    echo "📂 Instalando en $PMA_PATH/themes/"
-    mkdir -p "$PMA_PATH/themes"
-    cp -r "/tmp/$THEME_NAME" "$PMA_PATH/themes/" || return 1
+  # Preparar tmp
+  rm -rf "$TMP_DIR"
+  mkdir -p "$TMP_DIR"
 
-    # Permisos
-    chown -R www-data:www-data "$PMA_PATH/themes/$THEME_NAME"
-    chmod -R 755 "$PMA_PATH/themes/$THEME_NAME"
+  # Descargar
+  wget -q "$THEME_URL" -O "$TMP_DIR/theme.zip" || {
+    echo "❌ Error al descargar el tema"
+    return 1
+  }
 
-    # Limpieza
-    rm -rf "/tmp/$THEME_NAME" "/tmp/${THEME_NAME}.zip"
+  # Extraer
+  unzip -q "$TMP_DIR/theme.zip" -d "$TMP_DIR" || {
+    echo "❌ Error al extraer el tema"
+    return 1
+  }
 
-    echo "✅ Tema Darkwolf instalado correctamente"
-    return 0
+  # Validar tema
+  if [ ! -f "$TMP_DIR/$THEME_FOLDER/theme.json" ]; then
+    echo "❌ Tema incompatible con esta versión de phpMyAdmin"
+    return 1
+  fi
+
+  # Instalar
+  mkdir -p "$PMA_PATH/themes"
+  rm -rf "$PMA_PATH/themes/$THEME_FOLDER"
+  cp -r "$TMP_DIR/$THEME_FOLDER" "$PMA_PATH/themes/"
+
+  # Permisos
+  chown -R www-data:www-data "$PMA_PATH/themes"
+  chmod -R 755 "$PMA_PATH/themes"
+
+  # Limpieza
+  rm -rf "$TMP_DIR"
+
+  echo "✅ Tema Darkwolf instalado correctamente"
+  echo "➡ phpMyAdmin → Settings → Appearance → Darkwolf"
 }
+
 # ==============================
 # LIMPIEZA TOTAL DEL VPS (COMPLETA - BORRA TODO)
 # ==============================
