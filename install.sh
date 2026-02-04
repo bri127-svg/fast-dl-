@@ -1441,7 +1441,7 @@ instalar_wings() {
   # ==============================
   # DIRECTORIOS
   # ==============================
-  mkdir -p /etc/pterodactyl /var/lib/pterodactyl
+  # mkdir -p /etc/pterodactyl /var/lib/pterodactyl
 
   # ==============================
   # DESCARGA WINGS
@@ -2384,7 +2384,7 @@ gestion_avanzada() {
     echo -e "${CLR_LINE}─────────────────────────────────────${CLR_RESET}"
     echo
   }
-  
+
 # =====================================================
 # EJECUTOR REMOTO AUTENTICADO (NETRC + BASE64)
 # =====================================================
