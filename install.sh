@@ -3053,7 +3053,7 @@ instalar_certificado_ssl() {
   fi
 
   # Email por defecto (puedes cambiarlo si quieres)
-  EMAIL="contacto.tunegocio19@gmail.com"
+  EMAIL="contacto.usabrifreites@gmail.com"
 
   echo ""
   echo "[INFO] Dominio: $DOMINIO"
@@ -4203,7 +4203,7 @@ while true; do
     instalar_wings_sin_token
     ;;
     17)
-    instalar_certificado_ssl 
+     instalar_certificado_ssl
     ;;
     0)
       clear
