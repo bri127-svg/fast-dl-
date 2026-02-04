@@ -359,10 +359,11 @@ mostrar_menu() {
   echo -e "  \e[1;35m› [13]\e[0m Instalar Addon RevIActyl"
   echo -e "  \e[1;35m› [14]\e[0m Limpiador de Themes (Restaurar Panel)"
   echo -e "  \e[1;35m› [15]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
-  echo -e "  \e[1;35m› [16]\e[0m Instalar Tema DarkWolf para phpMyAdmin"
+  echo -e "  \e[1;36m› [16]\e[0m Instalar wings + Docker sin token"
+  echo -e "  \e[1;36m› [17]\e[0m Instalador Certificado SSL (simplificado)"
   echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
   echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
-  echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-15]: "
+  echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-17]: "
 }
 
 # ==============================
@@ -3028,6 +3029,104 @@ instalar_blueprint_addon() {
   read -p "Presiona Enter para continuar..."
 }
 # ==============================
+# INSTALADOR CERTIFICADO SSL (simplificado)
+# ==============================
+instalar_certificado_ssl() {
+  echo "=========================================="
+  echo "   GENERADOR DE CERTIFICADO SSL (SIMPLIFICADO)"
+  echo "   (Usa Let's Encrypt con Certbot y Nginx)"
+  echo "   creditos: briancarlos.dev & CRM "
+  echo "=========================================="
+  echo ""
+
+  # Verificar root
+  if [ "$(id -u)" -ne 0 ]; then
+    echo "[ERROR] Ejecuta como root"
+    return 1
+  fi
+
+  # Pedir dominio
+  read -p "👉 Dominio o subdominio (ej: panel.midominio.com): " DOMINIO
+  if [ -z "$DOMINIO" ]; then
+    echo "[ERROR] Dominio inválido"
+    return 1
+  fi
+
+  # Email por defecto (puedes cambiarlo si quieres)
+  EMAIL="contacto.tunegocio19@gmail.com"
+
+  echo ""
+  echo "[INFO] Dominio: $DOMINIO"
+  echo "[INFO] Email SSL: $EMAIL"
+  echo ""
+
+  # Instalar dependencias
+  echo "[INFO] Verificando Certbot y Nginx..."
+  apt update -y
+  apt install -y nginx certbot python3-certbot-nginx
+
+  # Verificar Nginx
+  if ! systemctl is-active --quiet nginx; then
+    echo "[INFO] Iniciando Nginx..."
+    systemctl enable --now nginx
+  fi
+
+  # Crear config HTTP temporal si no existe
+  SSL_CONF="/etc/nginx/sites-available/$DOMINIO.conf"
+
+  if [ ! -f "$SSL_CONF" ]; then
+    echo "[INFO] Creando configuración temporal HTTP..."
+    cat > "$SSL_CONF" <<EOF
+server {
+    listen 80;
+    server_name $DOMINIO;
+
+    location / {
+        return 200 "OK";
+    }
+}
+EOF
+
+    ln -sf "$SSL_CONF" /etc/nginx/sites-enabled/
+    nginx -t && systemctl reload nginx
+  fi
+
+  # Solicitar certificado
+  echo ""
+  echo "[INFO] Solicitando certificado SSL..."
+  if certbot --nginx \
+      -d "$DOMINIO" \
+      --non-interactive \
+      --agree-tos \
+      -m "$EMAIL" \
+      --redirect; then
+
+    echo ""
+    echo "[ OK ] CERTIFICADO SSL GENERADO CORRECTAMENTE"
+    echo ""
+    echo "📁 RUTAS:"
+    echo "   Certificado: /etc/letsencrypt/live/$DOMINIO/fullchain.pem"
+    echo "   Clave privada: /etc/letsencrypt/live/$DOMINIO/privkey.pem"
+    echo ""
+    echo "🔧 COMANDOS ÚTILES:"
+    echo "   certbot certificates"
+    echo "   certbot renew --dry-run"
+    echo ""
+    echo "⏳ Renovación automática ACTIVADA"
+  else
+    echo ""
+    echo "[ERROR] Falló la generación del certificado"
+    echo "Revisa:"
+    echo " - DNS apuntando a esta VPS"
+    echo " - Puertos 80 y 443 abiertos"
+    echo " - Cloudflare en modo PROXY (nube naranja OFF)"
+    return 1
+  fi
+
+  echo ""
+}
+
+# ==============================
 # GESTIÓN AVANZADA (BACKUP/USUARIOS)
 # ==============================
 
@@ -3866,6 +3965,90 @@ EOF
   # Eliminar archivo temporal
   rm -f "$fastdl_installer"
 }
+# ==============================
+# INSTALACIÓN WINGS (SIN TOKEN)
+# ==============================
+instalar_wings_sin_token() {
+  echo "=========================================="
+  echo "   INSTALACIÓN DE WINGS (SIN TOKEN)"
+  echo "=========================================="
+  echo ""
+
+  # Verificar root
+  if [ "$(id -u)" -ne 0 ]; then
+    echo "[ERROR] Ejecuta como root"
+    return 1
+  fi
+
+  # Docker
+  echo "[INFO] Verificando Docker..."
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "[INFO] Instalando Docker..."
+    curl -sSL https://get.docker.com | bash
+    systemctl enable --now docker
+  else
+    echo "[ OK ] Docker ya instalado"
+  fi
+
+  # Directorios
+  echo "[INFO] Creando directorios de Wings..."
+  mkdir -p /etc/pterodactyl
+
+  # Arquitectura
+  ARCH=$(uname -m)
+  case "$ARCH" in
+    x86_64) ARCH="amd64" ;;
+    aarch64) ARCH="arm64" ;;
+    *)
+      echo "[ERROR] Arquitectura no soportada: $ARCH"
+      return 1
+      ;;
+  esac
+
+  # Descargar Wings
+  echo "[INFO] Descargando Wings..."
+  curl -L -o /usr/local/bin/wings \
+    "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$ARCH"
+
+  chmod +x /usr/local/bin/wings
+
+  # Servicio systemd
+  echo "[INFO] Configurando servicio Wings..."
+  curl -sSL -o /etc/systemd/system/wings.service \
+    https://raw.githubusercontent.com/pterodactyl/wings/develop/systemd/wings.service
+
+  systemctl daemon-reload
+  systemctl enable wings
+
+  # Firewall básico
+  echo "[INFO] Abriendo puertos básicos..."
+  if command -v ufw >/dev/null 2>&1; then
+    ufw allow 8080/tcp
+    ufw allow 2022/tcp
+    ufw reload
+  else
+    iptables -C INPUT -p tcp --dport 8080 -j ACCEPT 2>/dev/null || iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+    iptables -C INPUT -p tcp --dport 2022 -j ACCEPT 2>/dev/null || iptables -A INPUT -p tcp --dport 2022 -j ACCEPT
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
+  fi
+
+  echo ""
+  echo "[ OK ] Wings INSTALADO (SIN TOKEN)"
+  echo ""
+  echo "📌 SIGUIENTE PASO (MANUAL):"
+  echo "1) Ve al panel Pterodactyl"
+  echo "2) Nodes → Create Node"
+  echo "3) Copia el comando de configuración"
+  echo "4) Pégalo y ejecútalo en este servidor"
+  echo ""
+  echo "🔧 Comandos útiles:"
+  echo "   wings --version"
+  echo "   systemctl start wings"
+  echo "   systemctl status wings"
+  echo "   journalctl -u wings -f"
+  echo ""
+}
+
 
 # ==============================
 # GESTIÓN DE THEMES – NOOKTHEME
@@ -4017,7 +4200,10 @@ while true; do
     instalar_blueprint_addon
     ;;
     16)
-    install_phpmyadmin_theme_darkwolf
+    instalar_wings_sin_token
+    ;;
+    17)
+    instalar_certificado_ssl 
     ;;
     0)
       clear
