@@ -1517,7 +1517,7 @@ EOF
 
     certbot --nginx -d "$WINGS_DOMAIN" --non-interactive --agree-tos -m admin@"$WINGS_DOMAIN"
   fi
-
+ mkdir -p /etc/pterodactyl /var/lib/pterodactyl
   # ==============================
   # TOKEN
   # ==============================
