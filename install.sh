@@ -1397,6 +1397,9 @@ wings_remove() {
   sleep 2
 }
 
+# ==============================
+# MENÚ WINGS
+# ==============================
 instalar_wings() {
   clear
   echo "================================================"
@@ -1405,7 +1408,8 @@ instalar_wings() {
   echo ""
   echo "  [1] Instalar Wings (Normal / IP)"
   echo "  [2] Instalar Wings con Subdominio + SSL"
-  echo "  [3] borra Wings"
+  echo "  [3] Eliminar Wings"
+  echo ""
   echo "  [0] Volver"
   echo ""
   read -rp "Selecciona una opción: " WINGS_OPTION
@@ -1413,7 +1417,12 @@ instalar_wings() {
   case "$WINGS_OPTION" in
     1) SSL_MODE=0 ;;
     2) SSL_MODE=1 ;;
-    3) wings_remove ;;
+    3)
+      read -rp "¿Seguro que deseas eliminar Wings? (s/N): " confirm
+      [[ "$confirm" =~ ^[SsYy]$ ]] || { log_info "Operación cancelada."; sleep 1; return; }
+      wings_remove
+      return
+      ;;
     0) return ;;
     *) log_warn "Opción inválida"; sleep 1; return ;;
   esac
@@ -1438,11 +1447,6 @@ instalar_wings() {
   else
     log_info "Docker ya instalado"
   fi
-
-  # ==============================
-  # DIRECTORIOS
-  # ==============================
-  # mkdir -p /etc/pterodactyl /var/lib/pterodactyl
 
   # ==============================
   # DESCARGA WINGS
