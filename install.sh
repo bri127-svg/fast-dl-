@@ -1369,22 +1369,30 @@ EOF
   
   rm -f "$installer_file"
 }
+# ==============================
+# VARIABLES
+# ==============================
+WINGS_BIN="/usr/local/bin/wings"
+WINGS_SERVICE="/etc/systemd/system/wings.service"
+WINGS_PORT=8080
 
 # ==============================
-# ELIMINAR WINGS
+# LOGS
+# ==============================
+log_info() { echo -e "[INFO] $1"; }
+log_ok()   { echo -e "[OK]   $1"; }
+log_warn() { echo -e "[WARN] $1"; }
+log_err()  { echo -e "[ERR]  $1"; }
+
+# ==============================
+# ELIMINAR SOLO WINGS (SIN DOCKER)
 # ==============================
 wings_remove() {
-  log_warn "Eliminando Pterodactyl Wings..."
+  log_warn "Eliminando Pterodactyl Wings (Docker NO será tocado)..."
 
   if systemctl list-unit-files | grep -q '^wings.service'; then
     systemctl stop wings 2>/dev/null || true
     systemctl disable wings 2>/dev/null || true
-  fi
-
-  if command -v docker &>/dev/null; then
-    log_info "Deteniendo y eliminando contenedores Docker..."
-    docker ps -aq | xargs -r docker stop
-    docker ps -aq | xargs -r docker rm
   fi
 
   rm -rf /var/lib/pterodactyl
@@ -1393,10 +1401,13 @@ wings_remove() {
   rm -f "$WINGS_SERVICE"
 
   systemctl daemon-reload
-  log_ok "Wings eliminado completamente"
+  log_ok "Wings eliminado correctamente"
   sleep 2
 }
 
+# ==============================
+# MENÚ WINGS
+# ==============================
 instalar_wings() {
   clear
   echo "================================================"
@@ -1405,7 +1416,7 @@ instalar_wings() {
   echo ""
   echo "  [1] Instalar Wings (Normal / IP)"
   echo "  [2] Instalar Wings con Subdominio + SSL"
-  echo ""
+  echo "  [3] Eliminar Wings"
   echo "  [0] Volver"
   echo ""
   read -rp "Selecciona una opción: " WINGS_OPTION
@@ -1413,6 +1424,7 @@ instalar_wings() {
   case "$WINGS_OPTION" in
     1) SSL_MODE=0 ;;
     2) SSL_MODE=1 ;;
+    3) wings_remove; return ;;
     0) return ;;
     *) log_warn "Opción inválida"; sleep 1; return ;;
   esac
@@ -1427,7 +1439,7 @@ instalar_wings() {
   fi
 
   # ==============================
-  # DOCKER
+  # DOCKER (SOLO INSTALA SI NO EXISTE)
   # ==============================
   log_info "Verificando Docker..."
   if ! command -v docker &>/dev/null; then
@@ -1437,11 +1449,6 @@ instalar_wings() {
   else
     log_info "Docker ya instalado"
   fi
-
-  # ==============================
-  # DIRECTORIOS
-  # ==============================
-  # mkdir -p /etc/pterodactyl /var/lib/pterodactyl
 
   # ==============================
   # DESCARGA WINGS
@@ -1486,7 +1493,6 @@ instalar_wings() {
   # NGINX + SSL
   # ==============================
   if [ "$SSL_MODE" -eq 1 ]; then
-    log_info "Instalando Nginx y Certbot..."
     apt update
     apt install -y nginx certbot python3-certbot-nginx
 
