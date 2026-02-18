@@ -86,7 +86,7 @@ panel_webserver() {
 }
 
 # ==============================
-# ESTADO CRM (INFORMADOR)
+# ESTADO By Briancarlos (INFORMADOR)
 # ==============================
 
 check_panel() {
@@ -308,7 +308,7 @@ mostrar_menu() {
   
   echo -e "\e[1;36m══════════════════════════════════════════════════\e[0m"
   echo -e "\e[1;36m         PANEL DE CONTROL - SYSTEM INFO\e[0m"
-  echo -e "\e[1;36m   Creditos By Crm & Briancarlos.dev | Team Vhl   \e[0m"
+  echo -e "\e[1;36m   Creditos By Briancarlos.dev | Bcf-Studio  \e[0m"
   echo -e "\e[1;36m══════════════════════════════════════════════════\e[0m"
 
   echo -e "\e[1;33m◈ INFORMACIÓN DEL SISTEMA ◈\e[0m"
@@ -340,31 +340,44 @@ mostrar_menu() {
   echo -e "\e[1;37mIP Pública:\e[0m       \e[96m$PUBLIC_IP\e[0m"
   echo -e "\e[1;37mUbicación:\e[0m        \e[95m$LOCATION\e[0m"
   
-  echo ""
-  echo -e "\e[1;33m◈ MENÚ DE OPCIONES ◈\e[0m"
-  echo -e "\e[90m─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─\e[0m"
-  echo ""
-  echo -e "  \e[1;32m› [1]\e[0m Instalar Panel Pterodactyl"
-  echo -e "  \e[1;32m› [2]\e[0m Instalar Wings (Daemon)"
-  echo -e "  \e[1;32m› [3]\e[0m Instalar phpMyAdmin"
-  echo -e "  \e[1;32m› [4]\e[0m Configurar Base de Datos"
-  echo -e "  \e[1;33m› [5]\e[0m Corregir MariaDB (bind-address)"
-  echo -e "  \e[1;36m› [6]\e[0m Instalar FastDL"
-  echo -e "  \e[1;33m› [7]\e[0m Reparación (Rescue)"
-  echo -e "  \e[1;31m› [8]\e[0m Limpieza Total (BORRA TODO)"
-  echo -e "  \e[1;34m› [9]\e[0m Gestión de Puertos"
-  echo -e "  \e[1;35m› [10]\e[0m Gestión Avanzada (Backup/Usuarios)"
-  echo -e "  \e[1;35m› [11]\e[0m Gestión de Temas (NookTheme)"
-  echo -e "  \e[1;35m› [12]\e[0m Ejecutar Comandos para intalacion de el nebula"
-  echo -e "  \e[1;35m› [13]\e[0m Instalar Addon RevIActyl"
-  echo -e "  \e[1;35m› [14]\e[0m Limpiador de Themes (Restaurar Panel)"
-  echo -e "  \e[1;35m› [15]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
-  echo -e "  \e[1;36m› [16]\e[0m Instalar wings + Docker sin token"
-  echo -e "  \e[1;36m› [17]\e[0m Instalador Certificado SSL (simplificado)"
-  echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
-  echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
-  echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-17]: "
-}
+ echo ""
+echo -e "\e[1;33m◈ MENÚ DE OPCIONES ◈\e[0m"
+echo -e "\e[90m─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─\e[0m"
+echo ""
+
+# VERDE
+echo -e "  \e[1;32m› [4]\e[0m Configurar Base de Datos"
+echo -e "  \e[1;32m› [1]\e[0m Instalar Panel Pterodactyl"
+echo -e "  \e[1;32m› [3]\e[0m Instalar phpMyAdmin"
+echo -e "  \e[1;32m› [2]\e[0m Instalar Wings (Daemon)"
+
+# AMARILLO
+echo -e "  \e[1;33m› [5]\e[0m Corregir MariaDB (bind-address)"
+echo -e "  \e[1;33m› [7]\e[0m Reparación (Rescue)"
+
+# CIAN
+echo -e "  \e[1;36m› [17]\e[0m Instalador Certificado SSL (simplificado)"
+echo -e "  \e[1;36m› [6]\e[0m Instalar FastDL"
+echo -e "  \e[1;36m› [16]\e[0m Instalar wings + Docker sin token"
+
+#  ROJO
+echo -e "  \e[1;31m› [8]\e[0m Limpieza Total (BORRA TODO)"
+echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
+
+# AZUL
+echo -e "  \e[1;34m› [9]\e[0m Gestión de Puertos"
+
+# MAGENTA
+echo -e "  \e[1;35m› [13]\e[0m Instalar Addon RevIActyl"
+echo -e "  \e[1;35m› [15]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
+echo -e "  \e[1;35m› [12]\e[0m Ejecutar Comandos para intalacion de el nebula"
+echo -e "  \e[1;35m› [10]\e[0m Gestión Avanzada (Backup/Usuarios)"
+echo -e "  \e[1;35m› [11]\e[0m Gestión de Temas (NookTheme)"
+echo -e "  \e[1;35m› [14]\e[0m Limpiador de Themes (Restaurar Panel)"
+
+echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
+echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-17]: "
+
 
 # ==============================
 # INSTALACIÓN DEL PANEL
@@ -1053,8 +1066,9 @@ panel_conf() {
   CREDENTIALS_FILE="/var/www/pterodactyl/ptero-summary/Data.txt"
   cat > "$CREDENTIALS_FILE" << EOL
 ╔══════════════════════════════════════════════════════════════╗
-║                 🦊 P.Servers AutoInstall                     ║
+║                Bcf-Studio AutoInstall                      ║
 ║                   CREDENCIALES DEL PANEL                     ║
+║                 Creditos: Briacarlos.dev                     ║
 ╚══════════════════════════════════════════════════════════════╝
 
 📅 FECHA: $(date '+%Y-%m-%d %H:%M:%S')
@@ -1134,7 +1148,7 @@ Para la aplicación Pterodactyl (configuración automática):
 • Backup DB: mysqldump -u pterodactyluser -p'$DBPASSWORDHOST' panel > panel_backup.sql
 
 ╔══════════════════════════════════════════════════════════════╗
-║                ✅ INSTALACIÓN COMPLETADA                      ║
+║                ✅ INSTALACIÓN COMPLETADA                     ║
 ╚══════════════════════════════════════════════════════════════╝
 
 EOL
@@ -1325,7 +1339,7 @@ finish() {
   echo ""
 
   echo "================================================"
-  echo "        🦊 SERVERS INSTALACIÓN COMPLETA"
+  echo "         Bcf-Studio INSTALACIÓN COMPLETA"
   echo "================================================"
   echo ""
   echo "📄 Credenciales guardadas en:"
@@ -1392,7 +1406,8 @@ finish() {
   read -p "Presiona Enter para continuar..."
   echo ""
   echo "================================================"
-  echo "   ¡Gracias por usar Servers AutoInstall!"
+  echo "   ¡Gracias por usar Bcf-Studio AutoInstall!"
+  echo "   Creditos: Briacarlos.dev"
   echo "================================================"
 }
 
@@ -1442,6 +1457,7 @@ wings_remove() {
 instalar_wings() {
   echo "================================================"
   echo "     GESTIÓN DE PTERODACTYL WINGS"
+  echo "     Creditos: Briacarlos.dev & Bcf-Studio"
   echo "================================================"
   echo ""
   echo "  [1] Instalar Wings"
@@ -1600,7 +1616,7 @@ instalar_wings() {
   echo "================================================"
   echo ""
   
-  read -p "Pega el comando 'generate token' del panel: " WINGS_TOKEN_COMMAND
+  read -p "Pega el comando que 'generaste token' del panel: " WINGS_TOKEN_COMMAND
   
   if [ -n "$WINGS_TOKEN_COMMAND" ]; then
     log_info "Ejecutando comando de token..."
@@ -1997,7 +2013,8 @@ install_phpmyadmin_darkwolf_theme() {
 limpieza_total() {
   echo ""
   echo "╔══════════════════════════════════════════════════════════╗"
-  echo "║        ⚠️  LIMPIEZA TOTAL DEL VPS (BORRA TODO) ⚠️        ║"
+  echo "║        ⚠️  LIMPIEZA TOTAL DEL VPS (BORRA TODO) ⚠️       ║"
+  echo "║             Creditos: Briacarlos.dev                     ║"
   echo "╠══════════════════════════════════════════════════════════╣"
   echo "║ Esto ELIMINARÁ COMPLETAMENTE:                            ║"
   echo "║                                                          ║"
@@ -2147,6 +2164,8 @@ limpieza_total() {
   echo ""
   echo "╔══════════════════════════════════════════════════════════╗"
   echo "║                    ✅ LIMPIEZA COMPLETADA                ║"
+  echo "║      El VPS está listo para una nueva instalación        ║"
+  echo "║       Creditos: Briacarlos.dev & Bcf-Studio            ║"
   echo "╠══════════════════════════════════════════════════════════╣"
   echo "║ El VPS ha sido limpiado completamente de:                ║"
   echo "║                                                          ║"
@@ -2200,6 +2219,7 @@ reparar_mariadb() {
   echo ""
   echo "╔══════════════════════════════════════════════════════════╗"
   echo "║            🔧 REPARACIÓN COMPLETA DE MARIA DB            ║"
+  echo "║       Creditos: Briacarlos.dev & Bcf-Studio            ║"
   echo "╠══════════════════════════════════════════════════════════╣"
   echo "║ Este script diagnosticará y reparará MariaDB/MySQL       ║"
   echo "║ incluyendo:                                              ║"
@@ -2709,6 +2729,7 @@ gestionar_puertos() {
     echo ""
     echo "╔══════════════════════════════════════════════════════════╗"
     echo "║                   🔧 GESTIÓN DE PUERTOS                  ║"
+    echo "║       Creditos: Briacarlos.dev & Bcf-Studio            ║"
     echo "╠══════════════════════════════════════════════════════════╣"
     echo "║ Selecciona una opción:                                   ║"
     echo "║                                                          ║"
@@ -4057,6 +4078,7 @@ menu_nooktheme() {
   clear
   echo "======================================"
   echo "        GESTIÓN DE TEMAS"
+  echo "       Creditos: Briancarlos.dev & Bcf-Studio"
   echo "======================================"
   echo ""
   echo "  [1] Instalar NookTheme"
@@ -4153,66 +4175,78 @@ while true; do
   mostrar_menu
   read -r opcion
 
-  case "$opcion" in
-    1)
-      instalar_panel
-      ;;
-    2)
-      instalar_wings
-      ;;
-    3)
-      instalar_phpmyadmin
-      ;;
-    4)
-      configurar_database
-      ;;
-    5)
-      fix_mariadb_bind_address
-      ;;
-    6)
-      instalar_fastdl
-      ;;
-    7)
-      menu_rescue
-      ;;
-    8)
-      limpieza_total
-      ;;
-    9)
-      gestionar_puertos
-      ;;
-    10)
-      gestion_avanzada
-      ;;
-    11)
-      menu_nooktheme
-      ;;
-      12)
-      ejecutar_script_remoto
-      ;; 
-     13)
-     instalar_reviactyl
-     ;;
-     14)
-    limpiar_themes
-     ;;
-    15)
-    instalar_blueprint_addon
+ case "$opcion" in
+
+ 
+  4)
+    configurar_database
     ;;
-    16)
+  1)
+    instalar_panel
+    ;;
+  3)
+    instalar_phpmyadmin
+    ;;
+  2)
+    instalar_wings
+    ;;
+
+  5)
+    fix_mariadb_bind_address
+    ;;
+  7)
+    menu_rescue
+    ;;
+
+
+  17)
+    instalar_certificado_ssl
+    ;;
+  6)
+    instalar_fastdl
+    ;;
+  16)
     instalar_wings_sin_token
     ;;
-    17)
-     instalar_certificado_ssl
+
+
+  8)
+    limpieza_total
     ;;
-    0)
-      clear
-      echo "Saliendo..."
-      exit 0
-      ;;
-    *)
-      echo "Opción inválida"
-      sleep 1
-      ;;
-  esac
+  0)
+    clear
+    echo "Saliendo..."
+    exit 0
+    ;;
+
+
+  9)
+    gestionar_puertos
+    ;;
+
+  12)
+    ejecutar_script_remoto
+    ;;
+  10)
+    gestion_avanzada
+    ;;
+  11)
+    menu_nooktheme
+    ;;
+  14)
+    limpiar_themes
+    ;;
+  15)
+    instalar_blueprint_addon
+    ;;
+  13)
+    instalar_reviactyl
+    ;;
+
+  *)
+    echo "Opción inválida"
+    sleep 1
+    ;;
+esac
+
 done
