@@ -328,6 +328,7 @@ mostrar_menu() {
   
   echo -e "\e[1;36m══════════════════════════════════════════════════\e[0m"
   echo -e "\e[1;36m         PANEL DE CONTROL - SYSTEM INFO           \e[0m"
+  echo -e "\e[1;36m      Creditos:briancarlos.dev | BCF Studio       \e[0m"
   echo -e "\e[1;36m══════════════════════════════════════════════════\e[0m"
 
   echo -e "\e[1;33m◈ INFORMACIÓN DEL SISTEMA ◈\e[0m"
@@ -367,18 +368,19 @@ mostrar_menu() {
   echo -e "  \e[1;32m› [2]\e[0m Instalar Wings (Daemon)"
   echo -e "  \e[1;32m› [3]\e[0m Instalar phpMyAdmin"
   echo -e "  \e[1;32m› [4]\e[0m Configurar Base de Datos"
-  echo -e "  \e[1;36m› [5]\e[0m Instalar FastDL"
-  echo -e "  \e[1;33m› [6]\e[0m Reparación (Rescue)"
-  echo -e "  \e[1;31m› [7]\e[0m Limpieza Total (BORRA TODO)"
-  echo -e "  \e[1;34m› [8]\e[0m Gestión de Puertos"
-  echo -e "  \e[1;35m› [9]\e[0m Gestión Avanzada (Backup/Usuarios)"
-  echo -e "  \e[1;35m› [10]\e[0m Gestión de Temas (NookTheme)"
-  echo -e "  \e[1;35m› [11]\e[0m Ejecutar Comandos para intalacion de el nebula"
-  echo -e "  \e[1;35m› [12]\e[0m Instalar Addon RevIActyl"
-  echo -e "  \e[1;35m› [13]\e[0m Limpiador de Themes (Restaurar Panel)"
-  echo -e "  \e[1;35m› [14]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
-  echo -e "  \e[1;36m› [15]\e[0m Instalar wings + Docker sin token"
-  echo -e "  \e[1;36m› [16]\e[0m Instalador Certificado SSL (simplificado)"
+  echo -e "  \e[1;33m› [5]\e[0m Corregir MariaDB (bind-address)"
+  echo -e "  \e[1;36m› [6]\e[0m Instalar FastDL"
+  echo -e "  \e[1;33m› [7]\e[0m Reparación (Rescue)"
+  echo -e "  \e[1;31m› [8]\e[0m Limpieza Total (BORRA TODO)"
+  echo -e "  \e[1;34m› [9]\e[0m Gestión de Puertos"
+  echo -e "  \e[1;35m› [10]\e[0m Gestión Avanzada (Backup/Usuarios)"
+  echo -e "  \e[1;35m› [11]\e[0m Gestión de Temas (NookTheme)"
+  echo -e "  \e[1;35m› [12]\e[0m Ejecutar Comandos para intalacion de el nebula"
+  echo -e "  \e[1;35m› [13]\e[0m Instalar Addon RevIActyl"
+  echo -e "  \e[1;35m› [14]\e[0m Limpiador de Themes (Restaurar Panel)"
+  echo -e "  \e[1;35m› [15]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
+  echo -e "  \e[1;36m› [16]\e[0m Instalar wings + Docker sin token"
+  echo -e "  \e[1;36m› [17]\e[0m Instalador Certificado SSL (simplificado)"
   echo ""
   echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
   echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
@@ -386,7 +388,7 @@ mostrar_menu() {
 }
 
 # ==============================
-# INSTALADOR DEL PANEL
+# INSTALADOR DEL PANEL (BCF Studio)
 # ==============================
 
 instalar_panel() {
@@ -578,8 +580,8 @@ panel_validate_ssl_files() {
 
 panel_webserver() {
     send_summary
-    echo "[!] Select Webserver"
-    echo "    (1) NGINX (recommended)"
+    echo "[!]selecciona tu web server"
+    echo "    (1) NGINX (recomendado)"
     echo "    (2) Apache"
     echo "    Input 1-2"
     read -r option
@@ -594,7 +596,7 @@ panel_webserver() {
             ;;
         *) 
             echo ""
-            echo "Please enter a valid option from 1-2"
+            echo "porfavor ingrese una de las opciones validas 1-2"
             panel_webserver
             ;;
     esac
@@ -607,7 +609,7 @@ iptables_allow_established() {
 
 panel_fqdn() {
     send_summary
-    echo "[!] Please enter FQDN. You will access the Panel with this."
+    echo "[!] porfavor introdusca el(FQDN) con la que va a ingresar al panel"
     echo "[!] Example: panel.yourdomain.dk"
     read -r FQDN
     FQDN=$(echo "$FQDN" | tr '[:upper:]' '[:lower:]')
@@ -724,7 +726,7 @@ panel_email() {
 
     while true; do
         if [ "$SSLSTATUS" = "true" ]; then
-            panel_input "[!] Please enter your email. It will be shared with Lets Encrypt (if you selected that as SSL type) and used to set up this Panel." "EMAIL" 50
+            panel_input "[!]Por favor, introduce tu correo electrónico. Se utilizará para configurar este panel. "EMAIL" 50
         else
             panel_input "[!] Por favor, introduce tu correo electrónico. Se utilizará para configurar este panel." "EMAIL" 50
         fi
@@ -1055,8 +1057,9 @@ panel_conf() {
   CREDENTIALS_FILE="/var/www/pterodactyl/ptero-summary/Data.txt"
   cat > "$CREDENTIALS_FILE" << EOL
 ╔══════════════════════════════════════════════════════════════╗
-║                 🦊 P.Servers AutoInstall                     ║
+║                  P.Servers AutoInstall                       ║
 ║                   CREDENCIALES DEL PANEL                     ║
+║                   CREDITOS:Briancarlos.dev                   ║
 ╚══════════════════════════════════════════════════════════════╝
 
 📅 FECHA: $(date '+%Y-%m-%d %H:%M:%S')
@@ -1324,7 +1327,7 @@ finish() {
   echo ""
 
   echo "================================================"
-  echo "        🦊 SERVERS INSTALACIÓN COMPLETA"
+  echo "        SERVERS INSTALACIÓN COMPLETA"
   echo "================================================"
   echo ""
   echo "📄 Credenciales guardadas en:"
@@ -1605,6 +1608,7 @@ instalar_reviactyl() {
 instalar_wings() {
   echo "================================================"
   echo "     GESTIÓN DE PTERODACTYL WINGS"
+  echo "     Creditos:briancarlos.dev / BCF Studio      "
   echo "================================================"
   echo ""
   echo "  [1] Instalar Wings"
@@ -1751,7 +1755,7 @@ instalar_wings() {
   echo "================================================"
   echo ""
   
-  read -p "Pega el comando 'generate token' del panel: " WINGS_TOKEN_COMMAND
+  read -p "Pega el token generado en el panel: " WINGS_TOKEN_COMMAND
   
   if [ -n "$WINGS_TOKEN_COMMAND" ]; then
     log_info "Ejecutando comando de token..."
@@ -1838,6 +1842,23 @@ wings_remove() {
   sleep 2
 }
 
+fix_mariadb_bind_address() {
+  local cnf="/etc/mysql/mariadb.conf.d/50-server.cnf"
+
+  if [ ! -f "$cnf" ]; then
+    log_warn "Archivo MariaDB no encontrado, se omite bind-address."
+    return
+  fi
+
+  if grep -q "^bind-address *= *127.0.0.1" "$cnf"; then
+    log_info "Corrigiendo bind-address de MariaDB a 0.0.0.0"
+    sed -i 's/^bind-address.*/bind-address = 0.0.0.0/' "$cnf"
+    systemctl restart mariadb
+    log_ok "MariaDB ahora escucha en 0.0.0.0"
+  else
+    log_info "bind-address ya está correctamente configurado."
+  fi
+}
 # ==============================
 # MODO INSTALADOR WINGS
 # ==============================
@@ -2001,6 +2022,7 @@ instalar_phpmyadmin() {
   clear
   echo "================================================"
   echo "        GESTIÓN DE PHPMYADMIN"
+  echo "   Creditos:Briancarlos.dev /BCF Studio         "
   echo "================================================"
   echo ""
   echo "  [1] Instalar phpMyAdmin"
@@ -2325,7 +2347,7 @@ limpieza_total() {
   # ==============================
   # RESET FIREWALL (CRÍTICO)
   # ==============================
-  echo "🔥 Reseteando firewall..."
+  echo " Reseteando firewall..."
 
   if command -v ufw >/dev/null 2>&1; then
     ufw --force reset
@@ -2385,7 +2407,7 @@ reparar_mariadb() {
   echo "║  • Reparación de configuraciones                         ║"
   echo "║  • Reinstalación si es necesario                         ║"
   echo "║  • Configuración de usuarios root                        ║"
-  echo "║                                                          ║"
+  echo "║  • creditos a bcf studio                                 ║"
   echo "╚══════════════════════════════════════════════════════════╝"
   echo ""
   
@@ -3792,39 +3814,42 @@ while true; do
     configurar_database
     ;;
   5)
-    instalar_fastdl
+    fix_mariadb_bind_address
     ;;
   6)
-    menu_rescue
+    instalar_fastdl
     ;;
   7)
-    limpieza_total
+    menu_rescue
     ;;
   8)
-    gestionar_puertos
+    limpieza_total
     ;;
   9)
-    gestion_avanzada
+    gestionar_puertos
     ;;
   10)
-    menu_nooktheme
+    gestion_avanzada
     ;;
   11)
+    menu_nooktheme
+    ;;
+  12)
    ejecutar_script_remoto
    ;;
-  12)
+  13)
     instalar_reviactyl
     ;;
-  13)
+  14)
     limpiar_themes
     ;;
-  14)
+  15)
     instalar_blueprint_addon
     ;; 
-  15)
+  16)
     instalar_certificado_ssl
     ;;
-  16)
+  17)
     instalar_wings_sin_token
     ;;
 
