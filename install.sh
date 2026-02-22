@@ -339,44 +339,32 @@ mostrar_menu() {
   echo -e "\e[1;37mDisco Total:\e[0m      \e[97m$DISK_TOTAL\e[0m \e[90m(Usado: $DISK_USED / Libre: $DISK_FREE)\e[0m"
   echo -e "\e[1;37mIP Pública:\e[0m       \e[96m$PUBLIC_IP\e[0m"
   echo -e "\e[1;37mUbicación:\e[0m        \e[95m$LOCATION\e[0m"
-  
- echo ""
-echo -e "\e[1;33m◈ MENÚ DE OPCIONES ◈\e[0m"
-echo -e "\e[90m─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─\e[0m"
-echo ""
-
-# VERDE
-echo -e "  \e[1;32m› [4]\e[0m Configurar Base de Datos"
-echo -e "  \e[1;32m› [1]\e[0m Instalar Panel Pterodactyl"
-echo -e "  \e[1;32m› [3]\e[0m Instalar phpMyAdmin"
-echo -e "  \e[1;32m› [2]\e[0m Instalar Wings (Daemon)"
-
-# AMARILLO
-echo -e "  \e[1;33m› [5]\e[0m Corregir MariaDB (bind-address)"
-echo -e "  \e[1;33m› [7]\e[0m Reparación (Rescue)"
-
-# CIAN
-echo -e "  \e[1;36m› [17]\e[0m Instalador Certificado SSL (simplificado)"
-echo -e "  \e[1;36m› [6]\e[0m Instalar FastDL"
-echo -e "  \e[1;36m› [16]\e[0m Instalar wings + Docker sin token"
-
-#  ROJO
-echo -e "  \e[1;31m› [8]\e[0m Limpieza Total (BORRA TODO)"
-echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
-
-# AZUL
-echo -e "  \e[1;34m› [9]\e[0m Gestión de Puertos"
-
-# MAGENTA
-echo -e "  \e[1;35m› [13]\e[0m Instalar Addon RevIActyl"
-echo -e "  \e[1;35m› [15]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
-echo -e "  \e[1;35m› [12]\e[0m Ejecutar Comandos para intalacion de el nebula"
-echo -e "  \e[1;35m› [10]\e[0m Gestión Avanzada (Backup/Usuarios)"
-echo -e "  \e[1;35m› [11]\e[0m Gestión de Temas (NookTheme)"
-echo -e "  \e[1;35m› [14]\e[0m Limpiador de Themes (Restaurar Panel)"
-
-echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
-echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-17]: "
+    
+  echo ""
+  echo -e "\e[1;33m◈ MENÚ DE OPCIONES ◈\e[0m"
+  echo -e "\e[90m─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─\e[0m"
+  echo ""
+  echo -e "  \e[1;32m› [1]\e[0m Instalar Panel Pterodactyl"
+  echo -e "  \e[1;32m› [3]\e[0m Instalar phpMyAdmin"
+  echo -e "  \e[1;32m› [2]\e[0m Instalar Wings (Daemon)"
+  echo -e "  \e[1;32m› [4]\e[0m Configurar Base de Datos"
+  echo -e "  \e[1;33m› [5]\e[0m Corregir MariaDB (bind-address)"
+  echo -e "  \e[1;36m› [6]\e[0m Instalar FastDL"
+  echo -e "  \e[1;33m› [7]\e[0m Reparación (Rescue)"
+  echo -e "  \e[1;31m› [8]\e[0m Limpieza Total (BORRA TODO)"
+  echo -e "  \e[1;34m› [9]\e[0m Gestión de Puertos"
+  echo -e "  \e[1;35m› [10]\e[0m Gestión Avanzada (Backup/Usuarios)"
+  echo -e "  \e[1;35m› [11]\e[0m Gestión de Temas (NookTheme)"
+  echo -e "  \e[1;35m› [12]\e[0m Ejecutar Comandos para intalacion de el nebula"
+  echo -e "  \e[1;35m› [13]\e[0m Instalar Addon RevIActyl"
+  echo -e "  \e[1;35m› [14]\e[0m Limpiador de Themes (Restaurar Panel)"
+  echo -e "  \e[1;35m› [15]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
+  echo -e "  \e[1;36m› [16]\e[0m Instalar wings + Docker sin token"
+  echo -e "  \e[1;36m› [17]\e[0m Instalador Certificado SSL (simplificado)"
+  echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
+  echo ""
+  echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
+  echo -ne "\e[1;36m▷ \e[0mSeleccione una opción [0-17]: "
 
 
 # ==============================
@@ -611,7 +599,7 @@ iptables_allow_established() {
 
 panel_fqdn() {
     send_summary
-    echo "[!] Please enter FQDN. You will access the Panel with this."
+    echo "[!] Por favor, introduzca su FQDN. Accederá al panel con este."
     echo "[!] Example: panel.yourdomain.dk"
     read -r FQDN
     FQDN=$(echo "$FQDN" | tr '[:upper:]' '[:lower:]')
@@ -676,8 +664,8 @@ panel_fqdn() {
 
 panel_ssl() {
     send_summary
-    echo "[!] Do you want to use SSL for your Panel? This is recommended. (Y/N)"
-    echo "[!] SSL is recommended for every panel."
+    echo "[!] ¿Quieres usar SSL para tu panel? es recomendado (Y/N)"
+    echo "[!] Se recomienda SSL para todos los paneles.."
     while :; do
         read -r SSL_CONFIRM
         if [[ "$SSL_CONFIRM" =~ [Yy] ]]; then
@@ -689,7 +677,7 @@ panel_ssl() {
             panel_email
             break
         else
-            echo "[!] Invalid input, please enter Y or N."
+            echo "[!] Entrada no válida, por favor ingrese Y o N."
             panel_ssl
         fi
     done
@@ -697,9 +685,9 @@ panel_ssl() {
 
 panel_ssltype() {
     send_summary
-    echo "[!] Select SSL type"
+    echo "[!] Selecsione SSL type"
     echo "    (1) Let's Encrypt (recommended)"
-    echo "        You will later be asked if you agree to their Terms of Service."
+    echo "       Más tarde se le preguntará si acepta sus Términos de Servicio."
     echo "    (2) Custom"
     echo "    Input 1-2"
     read -r option
@@ -728,7 +716,7 @@ panel_email() {
 
     while true; do
         if [ "$SSLSTATUS" = "true" ]; then
-            panel_input "[!] Please enter your email. It will be shared with Lets Encrypt (if you selected that as SSL type) and used to set up this Panel." "EMAIL" 50
+            panel_input "[!] Ingrese su correo electrónico. Se compartirá con Let's Encrypt (si seleccionó el tipo SSL) y se usará para configurar este panel." "EMAIL" 50
         else
             panel_input "[!] Por favor, introduce tu correo electrónico. Se utilizará para configurar este panel." "EMAIL" 50
         fi
@@ -739,12 +727,12 @@ panel_email() {
         if [[ "$EMAIL" =~ ^[a-z0-9._%-]+@[a-z0-9.-]+\.[a-z]{2,}$ ]]; then
             break
         else
-            echo "[!] Invalid email format or unsupported characters detected."
-            echo "[!] Use only lowercase english letters, digits, and symbols . _ - @"
-            echo "Would you like to try entering the email again? (Y/N)"
+            echo "[!] Formato de correo electrónico no válido o caracteres no admitidos detectados."
+            echo "[!] Utilice únicamente letras minúsculas, dígitos y símbolos en inglés. . _ - @"
+            echo "¿Quieres intentar ingresar el correo electrónico nuevamente? (Y/N)"
             read -r answer
             if [[ ! "$answer" =~ ^[Yy]$ ]]; then
-                echo "[!] Email setup aborted."
+                echo "[!] Configuración de correo electrónico cancelada ."
                 exit 1
             fi
         fi
@@ -757,10 +745,10 @@ panel_admin_setup() {
     send_summary
     
     declare -A fields=(
-        ["FIRSTNAME"]="🔹 Enter your first name"
-        ["LASTNAME"]="🔹 Enter your last name"
-        ["USERNAME"]="🔹 Enter a username for your admin account"
-        ["USERPASSWORD"]="🔒 Enter a secure password"
+        ["FIRSTNAME"]="🔹 introdusca su nombre"
+        ["LASTNAME"]="🔹 introdusca su apellido"
+        ["USERNAME"]="🔹 introduzca un nombre de usuario para su cuenta de administrador"
+        ["USERPASSWORD"]="🔒 introduzca una contraseña segura"
     )
     keys=("FIRSTNAME" "LASTNAME" "USERNAME" "USERPASSWORD")
     
@@ -784,7 +772,7 @@ telemetry_prompt() {
     echo "Telemetry collects anonymized usage data from the panel to help improve the project."
     echo "You can read more here: https://pterodactyl.io/panel/1.0/additional_configuration.html#telemetry"
     echo ""
-    read -rp "Do you want to enable telemetry? (Y/n) " telemetry_input
+    read -rp "¿Desea habilitar telemetría? (Y/n) " telemetry_input
 
     telemetry_input=${telemetry_input:-Y}
 
@@ -792,7 +780,7 @@ telemetry_prompt() {
         [Yy]*) TELEMETRY=true ;;
         [Nn]*) TELEMETRY=false ;;
         *) 
-            echo "Invalid input. Please answer Y or N."
+            echo "porfavor ingrese su respuesta Y o N."
             telemetry_prompt
             ;;
     esac
@@ -820,7 +808,7 @@ panel_summary() {
     echo "    These credentials will be saved in a file called" 
     echo "    ptero-summary.txt in root directory. (excluding your personal password)"
     echo "" 
-    echo "    Do you want to start the installation? (Y/N)" 
+    echo "   ¿Desea continuar con la instalación? (Y/N)" 
     read -r PANEL_INSTALLATION
 
     if [[ "$PANEL_INSTALLATION" =~ [Yy] ]]; then
@@ -836,9 +824,9 @@ panel_summary() {
 
 panel_install() {
     set -euo pipefail
-    echo -e "\nStarting Pterodactyl Panel Installation...\n"
+    echo -e "\nIniciando la Instalacion De pterodactyl ..\n"
 
-    echo "Updating package lists..."
+    echo "actualizando lista de paquetes..."
     apt update -y
 
     echo "Installing required base packages..."
@@ -1019,7 +1007,7 @@ panel_install() {
             panel_conf
             ;;
         *)
-            echo "No webserver selected! Skipping webserver installation..."
+            echo "websever no reconocido tras la instalacion ..."
             ;;
     esac
 }
@@ -1206,9 +1194,9 @@ EOL
 
   if [ "$CUSTOMSSL" == false ] && [ "$WEBSERVER" == "NGINX" ]; then
     warning "ACTION REQUIRED"
-    echo "[!] How do you want to request the SSL certificate?"
-    echo "    1) Webserver mode (recommended, requires ports 80/443 open)"
-    echo "    2) DNS challenge (manual DNS setup required)"
+    echo "[!] opciones de certificado SSL?"
+    echo "    1) modo webserver (recomndado, puertos 80/443 open)"
+    echo "    2) cofiguracin DNS (manuañ DNS requiere, puertos 80/443 cerrados)"
     read -rp "[1/2]: " SSL_MODE
 
     if [[ "$SSL_MODE" != "2" ]]; then
@@ -1222,7 +1210,7 @@ EOL
         if [ ! -d "/etc/letsencrypt/live/$FQDN/" ] || [ "$FAIL" == true ]; then
           echo "[!] Let's Encrypt certificate attempt $attempt failed."
           if [ $attempt -lt $max_attempts ]; then
-            echo "Do you want to try again? (Y/N)"
+            echo "¿Quieres intentar nuevamente? (Y/N)"
             read -r TRY_AGAIN
             if [[ ! "$TRY_AGAIN" =~ ^[Yy]$ ]]; then
               break
@@ -1236,7 +1224,7 @@ EOL
       done
 
     else
-      echo "[!] You selected DNS Challenge mode."
+      echo "[!] selecionaste el modo de configuración DNS."
       apt install -y certbot
       echo "[!] When prompted, you will need to create TXT records in your DNS panel."
       echo "[!] Please create the records, wait at least 2-5 minutes then press enter."
@@ -1246,11 +1234,11 @@ EOL
 
     if [ "$FAIL" == true ]; then
       echo "[!] Let's Encrypt certificate failed after $max_attempts attempts."
-      echo "Do you want to continue without SSL? (Y/N)"
+      echo "quieres continuar sin SSL? (Y/N)"
       read -r CONTINUE_NO_SSL
 
       if [[ "$CONTINUE_NO_SSL" =~ ^[Yy]$ ]]; then
-        echo "Setting up NGINX without SSL..."
+        echo "quieres continuar sin SSL la configuracion de NGINX..."
         SSLSTATUS=false
         [ -f /etc/nginx/sites-enabled/default ] && rm -f /etc/nginx/sites-enabled/default
         rm -f /etc/nginx/sites-enabled/pterodactyl.conf
@@ -1262,10 +1250,10 @@ EOL
         echo "SESSION_SECURE_COOKIE=false" >> /var/www/pterodactyl/.env
         systemctl restart nginx
 
-        echo "Continuing installation without SSL..."
+        echo "Configuración NGINX sin SSL completada."
         FAIL=false
       else
-        echo "[!] Installation aborted due to SSL failure."
+        echo "[!] instalacion cancelada por el usuario."
         exit 1
       fi
     fi
@@ -1335,7 +1323,7 @@ EOL
 ### FINALIZACIÓN ###
 finish() {
   clear
-  echo "[!] Installation of Pterodactyl Panel done"
+  echo "[!] Instalación de Pterodactyl Panel completada exitosamente."
   echo ""
 
   echo "================================================"
@@ -4177,55 +4165,34 @@ while true; do
 
  case "$opcion" in
 
- 
-  4)
-    configurar_database
-    ;;
   1)
     instalar_panel
-    ;;
-  3)
-    instalar_phpmyadmin
     ;;
   2)
     instalar_wings
     ;;
-
+  3)
+    instalar_phpmyadmin
+    ;;
+ 
+  4)
+    configurar_database
+    ;;
   5)
     fix_mariadb_bind_address
-    ;;
-  7)
-    menu_rescue
-    ;;
-
-
-  17)
-    instalar_certificado_ssl
     ;;
   6)
     instalar_fastdl
     ;;
-  16)
-    instalar_wings_sin_token
+  
+  7)
+    menu_rescue
     ;;
-
-
   8)
     limpieza_total
     ;;
-  0)
-    clear
-    echo "Saliendo..."
-    exit 0
-    ;;
-
-
   9)
     gestionar_puertos
-    ;;
-
-  12)
-    ejecutar_script_remoto
     ;;
   10)
     gestion_avanzada
@@ -4233,14 +4200,32 @@ while true; do
   11)
     menu_nooktheme
     ;;
+  12)
+   ejecutar_script_remoto
+   ;;
+  13)
+    instalar_reviactyl
+    ;;
   14)
     limpiar_themes
     ;;
   15)
     instalar_blueprint_addon
+    ;; 
+  17)
+    instalar_certificado_ssl
     ;;
-  13)
-    instalar_reviactyl
+
+  16)
+    instalar_wings_sin_token
+    ;;
+
+
+  
+  0)
+    clear
+    echo "Saliendo..."
+    exit 0
     ;;
 
   *)
@@ -4248,5 +4233,4 @@ while true; do
     sleep 1
     ;;
 esac
-
 done
