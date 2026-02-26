@@ -388,7 +388,7 @@ mostrar_menu() {
 }
 
 # ==============================
-# INSTALADOR DEL PANEL (BCF Studio)
+# INSTALADOR DEL PANEL
 # ==============================
 
 instalar_panel() {
@@ -580,8 +580,8 @@ panel_validate_ssl_files() {
 
 panel_webserver() {
     send_summary
-    echo "[!]selecciona tu web server"
-    echo "    (1) NGINX (recomendado)"
+    echo "[!] Select Webserver"
+    echo "    (1) NGINX (recommended)"
     echo "    (2) Apache"
     echo "    Input 1-2"
     read -r option
@@ -596,7 +596,7 @@ panel_webserver() {
             ;;
         *) 
             echo ""
-            echo "porfavor ingrese una de las opciones validas 1-2"
+            echo "Please enter a valid option from 1-2"
             panel_webserver
             ;;
     esac
@@ -609,7 +609,7 @@ iptables_allow_established() {
 
 panel_fqdn() {
     send_summary
-    echo "[!] porfavor introdusca el(FQDN) con la que va a ingresar al panel"
+    echo "[!] Please enter FQDN. You will access the Panel with this."
     echo "[!] Example: panel.yourdomain.dk"
     read -r FQDN
     FQDN=$(echo "$FQDN" | tr '[:upper:]' '[:lower:]')
@@ -726,7 +726,7 @@ panel_email() {
 
     while true; do
         if [ "$SSLSTATUS" = "true" ]; then
-            panel_input "[!]Por favor, introduce tu correo electrónico. Se utilizará para configurar este panel. "EMAIL" 50
+            panel_input "[!] Please enter your email. It will be shared with Lets Encrypt (if you selected that as SSL type) and used to set up this Panel." "EMAIL" 50
         else
             panel_input "[!] Por favor, introduce tu correo electrónico. Se utilizará para configurar este panel." "EMAIL" 50
         fi
@@ -1057,9 +1057,8 @@ panel_conf() {
   CREDENTIALS_FILE="/var/www/pterodactyl/ptero-summary/Data.txt"
   cat > "$CREDENTIALS_FILE" << EOL
 ╔══════════════════════════════════════════════════════════════╗
-║                  P.Servers AutoInstall                       ║
+║                 🦊 P.Servers AutoInstall                     ║
 ║                   CREDENCIALES DEL PANEL                     ║
-║                   CREDITOS:Briancarlos.dev                   ║
 ╚══════════════════════════════════════════════════════════════╝
 
 📅 FECHA: $(date '+%Y-%m-%d %H:%M:%S')
@@ -1327,7 +1326,7 @@ finish() {
   echo ""
 
   echo "================================================"
-  echo "        SERVERS INSTALACIÓN COMPLETA"
+  echo "        🦊 SERVERS INSTALACIÓN COMPLETA"
   echo "================================================"
   echo ""
   echo "📄 Credenciales guardadas en:"
@@ -1429,6 +1428,7 @@ wings_remove() {
   log_ok "Wings eliminado completamente"
   sleep 2
 }
+
 # =====================================================
 # EJECUTOR REMOTO AUTENTICADO (NETRC + BASE64)
 # =====================================================
