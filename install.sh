@@ -3703,6 +3703,7 @@ instalar_darkwolf_phpmyadmin() {
   THEME_URL="https://files.phpmyadmin.net/themes/darkwolf/5.2/darkwolf-5.2.zip"
   TMP_FILE="/tmp/darkwolf.zip"
   THEME_DIR="/usr/share/phpmyadmin/themes"
+  CONFIG_FILE="/etc/phpmyadmin/config.inc.php"
 
   if [ ! -d "/usr/share/phpmyadmin" ]; then
       log_err "phpMyAdmin no está instalado"
@@ -3723,20 +3724,34 @@ instalar_darkwolf_phpmyadmin() {
 
   unzip -o "$TMP_FILE" -d "$THEME_DIR" >/dev/null
 
-  if [ -d "$THEME_DIR/darkwolf" ]; then
-      chown -R www-data:www-data "$THEME_DIR/darkwolf"
-      chmod -R 755 "$THEME_DIR/darkwolf"
-      log_ok "Tema Darkwolf instalado correctamente"
-  else
+  if [ ! -d "$THEME_DIR/darkwolf" ]; then
       log_err "No se pudo instalar el tema"
+      return
+  fi
+
+  chown -R www-data:www-data "$THEME_DIR/darkwolf"
+  chmod -R 755 "$THEME_DIR/darkwolf"
+
+  log_ok "Tema instalado"
+
+  # activar tema automaticamente
+  log_info "Activando Darkwolf como tema por defecto..."
+
+  if ! grep -q "PMA_THEME_DEFAULT" "$CONFIG_FILE"; then
+      echo "\$cfg['ThemeDefault'] = 'darkwolf';" >> "$CONFIG_FILE"
+  else
+      sed -i "s/\$cfg\['ThemeDefault'\].*/\$cfg['ThemeDefault'] = 'darkwolf';/" "$CONFIG_FILE"
   fi
 
   rm -f "$TMP_FILE"
 
-  echo ""
-  echo "Ahora puedes seleccionarlo en phpMyAdmin:"
-  echo "Configuración → Apariencia → Tema → Darkwolf"
+  log_ok "Tema Darkwolf activado automáticamente"
 
+  systemctl reload nginx 2>/dev/null || systemctl reload apache2 2>/dev/null || true
+
+  echo ""
+  echo "✔ phpMyAdmin ahora usa el tema DARKWOLF automáticamente"
+  echo ""
   read -p "Presiona Enter para continuar..."
 }
 # ==============================
