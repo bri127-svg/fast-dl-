@@ -381,6 +381,7 @@ mostrar_menu() {
   echo -e "  \e[1;35m› [15]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
   echo -e "  \e[1;36m› [16]\e[0m Instalar wings + Docker sin token"
   echo -e "  \e[1;36m› [17]\e[0m Instalador Certificado SSL (simplificado)"
+  echo -e "  \e[1;35m› [18]\e[0m Instalar Tema Darkwolf phpMyAdmin"
   echo ""
   echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
   echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
@@ -3695,6 +3696,49 @@ instalar_blueprint_addon() {
   log_ok "Addon Blueprint instalado correctamente"
   read -p "Presiona Enter para continuar..."
 }
+instalar_darkwolf_phpmyadmin() {
+
+  log_info "Instalando tema Darkwolf para phpMyAdmin..."
+
+  THEME_URL="https://files.phpmyadmin.net/themes/darkwolf/5.2/darkwolf-5.2.zip"
+  TMP_FILE="/tmp/darkwolf.zip"
+  THEME_DIR="/usr/share/phpmyadmin/themes"
+
+  if [ ! -d "/usr/share/phpmyadmin" ]; then
+      log_err "phpMyAdmin no está instalado"
+      return
+  fi
+
+  log_info "Descargando tema..."
+  wget -q "$THEME_URL" -O "$TMP_FILE"
+
+  if [ ! -f "$TMP_FILE" ]; then
+      log_err "Error descargando el tema"
+      return
+  fi
+
+  log_info "Extrayendo tema..."
+
+  mkdir -p "$THEME_DIR"
+
+  unzip -o "$TMP_FILE" -d "$THEME_DIR" >/dev/null
+
+  if [ -d "$THEME_DIR/darkwolf" ]; then
+      chown -R www-data:www-data "$THEME_DIR/darkwolf"
+      chmod -R 755 "$THEME_DIR/darkwolf"
+      log_ok "Tema Darkwolf instalado correctamente"
+  else
+      log_err "No se pudo instalar el tema"
+  fi
+
+  rm -f "$TMP_FILE"
+
+  echo ""
+  echo "Ahora puedes seleccionarlo en phpMyAdmin:"
+  echo "Configuración → Apariencia → Tema → Darkwolf"
+
+  read -p "Presiona Enter para continuar..."
+}
 # ==============================
 # INSTALADOR CERTIFICADO SSL (simplificado)
 # ==============================
@@ -3852,7 +3896,10 @@ while true; do
   17)
     instalar_wings_sin_token
     ;;
-
+  18) 
+  instalar_darkwolf_phpmyadmin 
+  ;;
+    
   0)
     clear
     echo "Saliendo..."
