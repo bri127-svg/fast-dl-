@@ -212,6 +212,30 @@ check_fastdl() {
     *) echo "Problema ⚠️ (HTTPS $HTTPS_CODE | $DOMINIO)" ;;
   esac
 }
+# ==============================
+# BANNER PRINCIPAL
+# ==============================
+mostrar_banner() {
+    clear
+    # Colores
+    ROJO='\033[0;31m'
+    VERDE='\033[0;32m'
+    AMARILLO='\033[1;33m'
+    NC='\033[0m' # Sin color
+
+    echo -e "${ROJO}███╗   ██╗███████╗██╗  ██╗ ██████╗ ██████╗  █████╗${NC}"
+    echo -e "${ROJO}████╗  ██║██╔════╝╚██╗██╔╝██╔═══██╗██╔══██╗██╔══██╗${NC}"
+    echo -e "${ROJO}██╔██╗ ██║█████╗   ╚███╔╝ ██║   ██║██████╔╝███████║${NC}"
+    echo -e "${ROJO}██║╚██╗██║██╔══╝   ██╔██╗ ██║   ██║██╔══██╗██╔══██║${NC}"
+    echo -e "${ROJO}██║ ╚████║███████╗██╔╝ ██╗╚██████╔╝██║  ██║██║  ██║${NC}"
+    echo -e "${ROJO}╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝${NC}"
+    echo ""
+    echo -e "${VERDE}NEXORA SYSTEMS${NC}"
+    echo -e "${AMARILLO}Infraestructura • Servidores • Automatización${NC}"
+    echo ""
+    echo "Desarrollado por BrianCarlos.dev"
+    echo ""
+}
 
 mostrar_estado() {
   echo ""
@@ -381,7 +405,7 @@ mostrar_menu() {
   echo -e "  \e[1;35m› [15]\e[0m Instalar Addon Blueprint (FONDO DE SERVIDOR)"
   echo -e "  \e[1;36m› [16]\e[0m Instalar wings + Docker sin token"
   echo -e "  \e[1;36m› [17]\e[0m Instalador Certificado SSL (simplificado)"
-  echo -e "  \e[1;35m› [18]\e[0m Instalar Tema Darkwolf phpMyAdmin"
+  echo -e "  \e[1;36m› [18]\e[0m Gestión túneles WireGuard"
   echo ""
   echo -e "  \e[1;31m› [0]\e[0m Salir del programa"
   echo -e "\e[90m────────────────────────────────────────────────────\e[0m"
@@ -2699,26 +2723,46 @@ gestionar_puertos() {
   while true; do
     clear
     echo ""
-    echo "╔══════════════════════════════════════════════════════════╗"
-    echo "║                   🔧 GESTIÓN DE PUERTOS                  ║"
-    echo "╠══════════════════════════════════════════════════════════╣"
-    echo "║  1) Ver puertos abiertos                                 ║"
-    echo "║  2) Abrir puerto                                         ║"
-    echo "║  3) Cerrar/Eliminar puerto                               ║"
-    echo "║                                                          ║"
-    echo "║  0) Volver                                               ║"
-    echo "╚══════════════════════════════════════════════════════════╝"
+    echo "╔════════════════════════════════════════════════════════════╗"
+    echo "║                    🔧 GESTIÓN DE PUERTOS                   ║"
+    echo "╠════════════════════════════════════════════════════════════╣"
+    echo "║  1) Ver puertos abiertos                                   ║"
+    echo "║  2) Abrir puerto                                           ║"
+    echo "║  3) Cerrar / Eliminar puerto                               ║"
+    echo "║                                                            ║"
+    echo "║  0) Volver al menú principal                               ║"
+    echo "╚════════════════════════════════════════════════════════════╝"
     echo ""
 
-    read -rp "▷ Selecciona una opción [0-3]: " opcion
+    read -rp "▶ Seleccione una opción [0-3]: " opcion
+    echo ""
 
     case "$opcion" in
-      1) ver_puertos_abiertos ;;
-      2) abrir_puerto ;;
-      3) cerrar_puerto ;;
-      0) return ;;
-      *) echo "Opción inválida"; sleep 1 ;;
+      1)
+        echo "🔎 Mostrando puertos abiertos..."
+        ver_puertos_abiertos
+        ;;
+      2)
+        echo "🟢 Abrir un nuevo puerto"
+        abrir_puerto
+        ;;
+      3)
+        echo "🔴 Cerrar / eliminar un puerto"
+        cerrar_puerto
+        ;;
+      0)
+        echo "↩️  Volviendo al menú anterior..."
+        sleep 1
+        return
+        ;;
+      *)
+        echo "⚠️  Opción inválida. Intente nuevamente."
+        sleep 1
+        ;;
     esac
+
+    echo ""
+    read -rp "Presione ENTER para continuar..."
   done
 }
 
@@ -2946,7 +2990,215 @@ gestion_avanzada() {
       --password="$PASSWORD" \
       --admin=1
   }
+# ==================================================
+#            GESTIÓN DE TÚNELES WIREGUARD
+# ==================================================
 
+# ---- VERIFICAR ROOT ----
+if [ "$EUID" -ne 0 ]; then
+    echo "Este script debe ejecutarse como root"
+    exit
+fi
+
+# ---- INSTALAR WIREGUARD SI NO EXISTE ----
+instalar_wg() {
+if ! command -v wg >/dev/null 2>&1; then
+    echo "Instalando WireGuard..."
+    apt update -y
+    apt install wireguard iptables curl -y
+fi
+}
+
+# ---- STATUS SISTEMA Y WG ----
+wg_status() {
+
+CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}')
+RAM=$(free -h | awk '/Mem:/ {print $3 "/" $2}')
+DISK=$(df -h / | awk 'NR==2 {print $3 "/" $2}')
+IP=$(curl -s ifconfig.me 2>/dev/null || hostname -I | awk '{print $1}')
+
+WG0=$(systemctl is-active wg-quick@wg0 2>/dev/null)
+WG1=$(systemctl is-active wg-quick@wg1 2>/dev/null)
+
+echo "================================================"
+echo "        Nexora System - WireGuard Manager"
+echo "================================================"
+echo "IP: $IP"
+echo "CPU: $CPU%"
+echo "RAM: $RAM"
+echo "DISCO: $DISK"
+echo "WG0: $WG0 | WG1: $WG1"
+echo "================================================"
+echo ""
+}
+
+# ---- INSTALAR WG0 PROVEEDOR ----
+instalar_wg0() {
+
+instalar_wg
+
+echo "=== CONFIGURACIÓN WG0 (PROVEEDOR) ==="
+
+read -p "Clave privada server: " SERVER_PRIV
+read -p "Puerto: " PORT
+read -p "IP wg server (ej: 10.0.2.1/30): " SERVER_IP
+read -p "Clave publica cliente: " CLIENT_PUB
+
+echo "IPs permitidas separadas por espacio:"
+read IPS
+
+ALLOWED="10.0.2.2/32"
+
+for i in $IPS; do
+ALLOWED="$ALLOWED, $i/32"
+done
+
+cat > /etc/wireguard/wg0.conf <<EOF
+[Interface]
+PrivateKey = $SERVER_PRIV
+ListenPort = $PORT
+Address = $SERVER_IP
+PostUp = sysctl -w net.ipv4.ip_forward=1
+PreDown = sysctl -w net.ipv4.ip_forward=0
+PostUp = sysctl -w net.ipv4.conf.all.proxy_arp=1
+PreDown = sysctl -w net.ipv4.conf.all.proxy_arp=0
+
+[Peer]
+PublicKey = $CLIENT_PUB
+AllowedIPs = $ALLOWED
+PersistentKeepAlive = 25
+EOF
+
+systemctl enable wg-quick@wg0
+systemctl restart wg-quick@wg0
+
+echo "WG0 instalado correctamente"
+read -p "Presiona ENTER para continuar..."
+}
+
+# ---- INSTALAR WG1 CLIENTE ----
+instalar_wg1() {
+
+instalar_wg
+
+echo "=== CONFIGURACIÓN WG1 (CLIENTE) ==="
+
+read -p "Clave privada cliente: " CLIENT_PRIV
+read -p "IP wg cliente (ej: 10.0.2.2/30): " CLIENT_IP
+read -p "Interfaz de red (ej: eth0): " IFACE
+read -p "Endpoint server: " ENDPOINT
+read -p "Puerto server: " PORT
+read -p "Clave publica server: " SERVER_PUB
+
+echo "IPs a rutear separadas por espacio:"
+read IPS
+
+ROUTES=""
+
+for i in $IPS; do
+ROUTES="$ROUTES
+PostUp = ip route add $i/32 dev $IFACE
+PreDown = ip route del $i/32 dev $IFACE"
+done
+
+cat > /etc/wireguard/wg1.conf <<EOF
+[Interface]
+PrivateKey = $CLIENT_PRIV
+Address = $CLIENT_IP
+Table = off
+PostUp = sysctl -w net.ipv4.ip_forward=1
+PreDown = sysctl -w net.ipv4.ip_forward=0
+PostUp = iptables -t mangle -A PREROUTING -i $IFACE -j MARK --set-mark 1
+PreDown = iptables -t mangle -D PREROUTING -i $IFACE -j MARK --set-mark 1
+PostUp = ip rule add fwmark 1 table 100
+PreDown = ip rule del fwmark 1 table 100
+PostUp = ip route add default dev wg1 table 100
+PreDown = ip route del default dev wg1 table 100
+$ROUTES
+
+[Peer]
+Endpoint = $ENDPOINT:$PORT
+PublicKey = $SERVER_PUB
+AllowedIPs = 0.0.0.0/0
+PersistentKeepAlive = 25
+EOF
+
+systemctl enable wg-quick@wg1
+systemctl restart wg-quick@wg1
+
+echo "WG1 instalado correctamente"
+read -p "Presiona ENTER para continuar..."
+}
+
+# ---- REINICIAR WG ----
+reiniciar_wg() {
+
+echo "Reiniciando túneles WireGuard..."
+
+systemctl restart wg-quick@wg0 2>/dev/null
+systemctl restart wg-quick@wg1 2>/dev/null
+
+echo "Túneles reiniciados"
+sleep 2
+}
+
+# ---- GENERAR CLAVES WG ----
+generar_claves() {
+
+echo "Generando claves WireGuard..."
+
+PRIV=$(wg genkey)
+PUB=$(echo $PRIV | wg pubkey)
+
+echo ""
+echo "Clave privada:"
+echo $PRIV
+echo ""
+echo "Clave pública:"
+echo $PUB
+echo ""
+
+read -p "Presiona ENTER para continuar..."
+}
+
+# ---- MENU WIREGUARD ----
+menu_wireguard() {
+
+while true; do
+
+clear
+wg_status
+
+echo "╔══════════════════════════════════════╗"
+echo "║        🔐 GESTIÓN WIREGUARD          ║"
+echo "╠══════════════════════════════════════╣"
+echo "║ 1) Instalar túnel WG0 (Proveedor)    ║"
+echo "║ 2) Instalar túnel WG1 (Cliente)      ║"
+echo "║ 3) Reiniciar túneles                 ║"
+echo "║ 4) Ver estado WireGuard              ║"
+echo "║ 5) Generar claves WireGuard          ║"
+echo "║                                      ║"
+echo "║ 0) Volver                            ║"
+echo "╚══════════════════════════════════════╝"
+
+read -p "Seleccione una opción: " op
+
+case $op in
+
+1) instalar_wg0 ;;
+2) instalar_wg1 ;;
+3) reiniciar_wg ;;
+4) wg show ; read -p "ENTER para continuar..." ;;
+5) generar_claves ;;
+0) return ;;
+
+*) echo "Opción inválida"; sleep 1 ;;
+
+esac
+
+done
+
+}
   # ==============================
   # ELIMINAR USUARIO
   # ==============================
@@ -3696,64 +3948,6 @@ instalar_blueprint_addon() {
   log_ok "Addon Blueprint instalado correctamente"
   read -p "Presiona Enter para continuar..."
 }
-instalar_darkwolf_phpmyadmin() {
-
-  log_info "Instalando tema Darkwolf para phpMyAdmin..."
-
-  THEME_URL="https://files.phpmyadmin.net/themes/darkwolf/5.2/darkwolf-5.2.zip"
-  TMP_FILE="/tmp/darkwolf.zip"
-  THEME_DIR="/usr/share/phpmyadmin/themes"
-  CONFIG_FILE="/etc/phpmyadmin/config.inc.php"
-
-  if [ ! -d "/usr/share/phpmyadmin" ]; then
-      log_err "phpMyAdmin no está instalado"
-      return
-  fi
-
-  log_info "Descargando tema..."
-  wget -q "$THEME_URL" -O "$TMP_FILE"
-
-  if [ ! -f "$TMP_FILE" ]; then
-      log_err "Error descargando el tema"
-      return
-  fi
-
-  log_info "Extrayendo tema..."
-
-  mkdir -p "$THEME_DIR"
-
-  unzip -o "$TMP_FILE" -d "$THEME_DIR" >/dev/null
-
-  if [ ! -d "$THEME_DIR/darkwolf" ]; then
-      log_err "No se pudo instalar el tema"
-      return
-  fi
-
-  chown -R www-data:www-data "$THEME_DIR/darkwolf"
-  chmod -R 755 "$THEME_DIR/darkwolf"
-
-  log_ok "Tema instalado"
-
-  # activar tema automaticamente
-  log_info "Activando Darkwolf como tema por defecto..."
-
-  if ! grep -q "PMA_THEME_DEFAULT" "$CONFIG_FILE"; then
-      echo "\$cfg['ThemeDefault'] = 'darkwolf';" >> "$CONFIG_FILE"
-  else
-      sed -i "s/\$cfg\['ThemeDefault'\].*/\$cfg['ThemeDefault'] = 'darkwolf';/" "$CONFIG_FILE"
-  fi
-
-  rm -f "$TMP_FILE"
-
-  log_ok "Tema Darkwolf activado automáticamente"
-
-  systemctl reload nginx 2>/dev/null || systemctl reload apache2 2>/dev/null || true
-
-  echo ""
-  echo "✔ phpMyAdmin ahora usa el tema DARKWOLF automáticamente"
-  echo ""
-  read -p "Presiona Enter para continuar..."
-}
 # ==============================
 # INSTALADOR CERTIFICADO SSL (simplificado)
 # ==============================
@@ -3912,9 +4106,9 @@ while true; do
     instalar_wings_sin_token
     ;;
   18) 
-  instalar_darkwolf_phpmyadmin 
+   menu_wireguard 
   ;;
-    
+
   0)
     clear
     echo "Saliendo..."
