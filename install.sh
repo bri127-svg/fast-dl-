@@ -212,30 +212,6 @@ check_fastdl() {
     *) echo "Problema ⚠️ (HTTPS $HTTPS_CODE | $DOMINIO)" ;;
   esac
 }
-# ==============================
-# BANNER PRINCIPAL
-# ==============================
-mostrar_banner() {
-    clear
-    # Colores
-    ROJO='\033[0;31m'
-    VERDE='\033[0;32m'
-    AMARILLO='\033[1;33m'
-    NC='\033[0m' # Sin color
-
-    echo -e "${ROJO}███╗   ██╗███████╗██╗  ██╗ ██████╗ ██████╗  █████╗${NC}"
-    echo -e "${ROJO}████╗  ██║██╔════╝╚██╗██╔╝██╔═══██╗██╔══██╗██╔══██╗${NC}"
-    echo -e "${ROJO}██╔██╗ ██║█████╗   ╚███╔╝ ██║   ██║██████╔╝███████║${NC}"
-    echo -e "${ROJO}██║╚██╗██║██╔══╝   ██╔██╗ ██║   ██║██╔══██╗██╔══██║${NC}"
-    echo -e "${ROJO}██║ ╚████║███████╗██╔╝ ██╗╚██████╔╝██║  ██║██║  ██║${NC}"
-    echo -e "${ROJO}╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝${NC}"
-    echo ""
-    echo -e "${VERDE}NEXORA SYSTEMS${NC}"
-    echo -e "${AMARILLO}Infraestructura • Servidores • Automatización${NC}"
-    echo ""
-    echo "Desarrollado por BrianCarlos.dev"
-    echo ""
-}
 
 mostrar_estado() {
   echo ""
@@ -345,6 +321,30 @@ menu_rescue() {
     4) rescue_wings ;;
   esac
 }
+# ==============================
+# BANNER PRINCIPAL
+# ==============================
+mostrar_banner() {
+    clear
+    # Colores
+    ROJO='\033[0;31m'
+    VERDE='\033[0;32m'
+    AMARILLO='\033[1;33m'
+    NC='\033[0m' # Sin color
+
+    echo -e "${ROJO}███╗   ██╗███████╗██╗  ██╗ ██████╗ ██████╗  █████╗${NC}"
+    echo -e "${ROJO}████╗  ██║██╔════╝╚██╗██╔╝██╔═══██╗██╔══██╗██╔══██╗${NC}"
+    echo -e "${ROJO}██╔██╗ ██║█████╗   ╚███╔╝ ██║   ██║██████╔╝███████║${NC}"
+    echo -e "${ROJO}██║╚██╗██║██╔══╝   ██╔██╗ ██║   ██║██╔══██╗██╔══██║${NC}"
+    echo -e "${ROJO}██║ ╚████║███████╗██╔╝ ██╗╚██████╔╝██║  ██║██║  ██║${NC}"
+    echo -e "${ROJO}╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝${NC}"
+    echo ""
+    echo -e "${VERDE}NEXORA SYSTEMS${NC}"
+    echo -e "${AMARILLO}Infraestructura • Servidores • Automatización${NC}"
+    echo ""
+    echo "Desarrollado por BrianCarlos.dev"
+    echo ""
+}
 
 mostrar_menu() {
   clear
@@ -352,7 +352,7 @@ mostrar_menu() {
   
   echo -e "\e[1;36m══════════════════════════════════════════════════\e[0m"
   echo -e "\e[1;36m         PANEL DE CONTROL - SYSTEM INFO           \e[0m"
-  echo -e "\e[1;36m      Creditos:briancarlos.dev | BCF Studio       \e[0m"
+  echo -e "\e[1;36m      Creditos:briancarlos.dev | Nexora Systems   \e[0m"
   echo -e "\e[1;36m══════════════════════════════════════════════════\e[0m"
 
   echo -e "\e[1;33m◈ INFORMACIÓN DEL SISTEMA ◈\e[0m"
