@@ -1,298 +1,76 @@
-🚀 Pterodactyl All-in-One Installer & Manager (Panel · Wings · FastDL · Extras)
+Pterodactyl All-in-One Installer & Manager
+Panel · Wings · FastDL · Extras
 
-Este repositorio contiene un script avanzado en Bash diseñado para instalar, administrar, reparar y mantener un entorno completo de Pterodactyl en servidores Linux (VPS o dedicados).
+Este repositorio incluye un script avanzado en Bash diseñado para instalar, administrar y mantener entornos completos de Pterodactyl en servidores Linux (VPS o dedicados).
 
-El script centraliza todas las tareas críticas relacionadas con:
+La herramienta centraliza en un menú interactivo automatizado todas las tareas esenciales relacionadas con la infraestructura del servidor, facilitando la implementación, gestión y mantenimiento del sistema.
 
-Pterodactyl Panel
+REQUISITOS
 
-Pterodactyl Wings (Daemon)
+- Sistema basado en Debian o Ubuntu
+- Acceso root
+- VPS o servidor dedicado
+- Conexión a internet
 
-FastDL para Counter-Strike 1.6
+INSTALACIÓN RÁPIDA
 
-phpMyAdmin
-
-MariaDB / MySQL
-
-Nginx / SSL
-
-Firewall y puertos
-
-Backups, usuarios y mantenimiento
-
-Todo desde un menú interactivo, automatizado y seguro.
-
-⚙️ Requisitos
-
-Sistema basado en Debian / Ubuntu
-
-Acceso root
-
-VPS o servidor dedicado
-
-Conectividad a internet
-
-🚀 Instalación rápida
-
-Ejecuta el script con:
+Ejecutar el siguiente comando:
 
 bash <(curl -fsSL https://raw.githubusercontent.com/bri127-svg/fast-dl-/main/install.sh)
 
-🔐 Seguridad inicial
+SEGURIDAD Y VERIFICACIÓN INICIAL
 
-Al iniciar, el script:
+El script realiza automáticamente:
 
-✅ Verifica que se ejecute como root
+- Verificación de ejecución como usuario root
+- Instalación de dependencias esenciales
+- Comprobación de servicios web existentes
+- Manejo seguro de errores del sistema
 
-✅ Comprueba e instala dependencias básicas (curl, wget)
+MONITOREO DEL SISTEMA
 
-✅ Habilita servicios web existentes (Nginx / PHP-FPM)
+Incluye un panel que muestra el estado de:
 
-✅ Maneja errores sin romper el sistema
+- Pterodactyl Panel
+- Wings
+- MariaDB
+- Nginx
+- PHP-FPM
+- FastDL
+- phpMyAdmin
 
-📊 Panel de estado del sistema
+También muestra información del sistema como:
 
-Antes de cualquier acción, el script muestra:
+- Sistema operativo
+- Kernel
+- Virtualización
+- CPU
+- RAM
+- Disco
+- IP pública
+- Uptime
 
-Estado del Panel Pterodactyl
+FUNCIONES PRINCIPALES
 
-Estado de Wings
+El menú interactivo permite:
 
-Estado de MariaDB
+- Instalación automática de Pterodactyl Panel
+- Configuración de Pterodactyl Wings
+- Gestión de phpMyAdmin
+- Configuración segura de bases de datos
+- Instalación completa de FastDL para Counter-Strike 1.6
+- Modo reparación de servicios
+- Gestión de firewall y puertos
+- Backups y administración avanzada
+- Instalación de themes y addons
 
-Estado de Nginx
+El script genera automáticamente archivos de credenciales, configuraciones y scripts auxiliares para facilitar la administración del servidor.
 
-Estado de PHP-FPM
+ADVERTENCIA
 
-Estado de FastDL
+Este script realiza modificaciones profundas en el sistema.  
+Se recomienda utilizarlo únicamente en VPS dedicados o entornos de prueba y revisar cuidadosamente cada opción antes de ejecutarla.
 
-Estado de phpMyAdmin
-
-Información del sistema:
-
-OS
-
-Kernel
-
-Virtualización
-
-CPU
-
-RAM
-
-Disco
-
-IP pública
-
-Uptime
-
-🧩 Funciones principales del menú
-1️⃣ Instalador del Panel Pterodactyl
-
-Usa el instalador oficial comunitario
-
-Configura:
-
-Nginx o Apache
-
-SSL (Let’s Encrypt o personalizado)
-
-MariaDB
-
-Redis
-
-PHP 8.3
-
-Crea usuario administrador
-
-Genera archivo Data.txt con:
-
-Credenciales del panel
-
-Usuarios de base de datos
-
-Rutas importantes
-
-Configura cronjobs y servicios systemd
-
-2️⃣ Instalador de Pterodactyl Wings
-
-Instalación normal (IP) o con subdominio + SSL
-
-Instala y configura:
-
-Docker
-
-Firewall (UFW o iptables)
-
-systemd (wings.service)
-
-Descarga binario oficial según arquitectura
-
-Configura Nginx como proxy si se usa SSL
-
-Ejecuta el token generado por el panel
-
-Verifica que Wings quede operativo
-
-3️⃣ phpMyAdmin
-
-Instalar o desinstalar
-
-Dos modos de acceso:
-
-/phpmyadmin
-
-Subdominio con SSL
-
-Configuración segura de PHP-FPM y Nginx
-
-Generación automática de blowfish_secret
-
-4️⃣ Configuración de Base de Datos (Database Host)
-
-Habilita acceso externo controlado
-
-Crea usuario MySQL exclusivo para hosts
-
-Guarda credenciales de forma segura
-
-Inserta la información en el archivo Data.txt
-
-5️⃣ Instalador FastDL CS 1.6 (completo)
-
-Instalación y desinstalación
-
-Configura:
-
-Nginx + SSL
-
-Dominio FastDL
-
-UUID del servidor
-
-Crea estructura:
-
-maps, models, sound, sprites, gfx, resource
-
-Copia archivos automáticamente desde /mnt/server/cstrike
-
-Configura server.cfg
-
-Scripts incluidos:
-
-sync_fastdl.sh (sincronización)
-
-fastdl_status.sh (estado)
-
-Soporte para cron automático
-
-Protección de archivos sensibles (cfg, logs, plugins)
-
-6️⃣ Modo Reparación (Rescue)
-
-Reparar:
-
-MariaDB
-
-Nginx
-
-PHP-FPM
-
-Wings
-
-Reinstala servicios si es necesario
-
-Diagnóstico automático
-
-7️⃣ Limpieza Total del VPS ⚠️
-
-⚠️ BORRA TODO
-
-Elimina:
-
-Panel
-
-Wings
-
-Docker
-
-MariaDB
-
-PHP
-
-Nginx / Apache
-
-Redis
-
-Certificados SSL
-
-Resetea firewall
-
-Deja el VPS listo para empezar desde cero
-
-8️⃣ Gestión de Puertos
-
-Ver puertos abiertos
-
-Abrir puertos (TCP / UDP)
-
-Cerrar puertos
-
-Compatible con:
-
-UFW
-
-iptables
-
-9️⃣ Gestión Avanzada
-
-Backups completos de servidores Wings
-
-Crear usuarios admin del panel
-
-Eliminar usuarios
-
-Listar backups
-
-Ejecutor remoto autenticado
-
-Limpieza y restauración de themes
-
-🔟 Gestión de Themes
-
-Instalar / desinstalar NookTheme
-
-Limpiador total de themes
-
-Restauración del panel oficial
-
-➕ Addons
-
-Instalador RevIActyl
-
-Instalador de addons Blueprint (.blueprint)
-
-📁 Archivos importantes generados
-
-/var/www/pterodactyl/ptero-summary/Data.txt
-
-/var/www/pterodactyl/credenciales.txt
-
-/root/fastdl_info.txt
-
-/usr/local/bin/sync_fastdl.sh
-
-/usr/local/bin/fastdl_status.sh
-
-👨‍💻 Creadores
+AUTOR
 
 briancarlos.dev
-
-CRM
-
-⚠️ Advertencia
-
-Este script realiza cambios profundos en el sistema.
-Usar únicamente en VPS dedicados o entornos de prueba.
-Leer cada opción antes de ejecutarla.
