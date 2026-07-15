@@ -4045,7 +4045,75 @@ EOF
 
   echo ""
 }
+Aquí tienes el fragmento de código estructurado como una función de Bash. Está diseñado de forma modular para que solo tengas que copiarlo, pegarlo al inicio o junto a las otras funciones de tu script actual, y luego llamarlo desde tu menú de opciones.
 
+1. La Función para tu Script
+Copia y pega esta función en tu archivo .sh actual:
+
+Bash
+inject_jexactyl_theme() {
+    output "======================================================"
+    output "       Inyectando Interfaz Jexactyl en Pterodactyl     "
+    output "======================================================"
+    
+    # Verificar si existe la ruta de Pterodactyl
+    if [ ! -d "/var/www/pterodactyl" ]; then
+        warn "Error: No se detectó la carpeta /var/www/pterodactyl."
+        warn "Asegúrate de tener Pterodactyl instalado antes de aplicar el tema."
+        return 1
+    fi
+
+    # 1. Instalar NodeJS y Yarn si no están presentes
+    output "Verificando herramientas de compilación (NodeJS & Yarn)..."
+    if ! command -v node &> /dev/null; then
+        output "Instalando NodeJS..."
+        curl -sL https://deb.nodesource.com/setup_16.x | bash -
+        apt-get install -y nodejs
+    fi
+
+    if ! command -v yarn &> /dev/null; then
+        output "Instalando Yarn..."
+        npm install --global yarn
+    fi
+
+    # 2. Respaldar assets actuales por seguridad
+    output "Creando copia de seguridad del frontend original..."
+    cd /var/www/pterodactyl || return 1
+    tar -czf pterodactyl_frontend_backup_$(date +%F).tar.gz resources/scripts
+
+    # 3. Descargar temporalmente el repositorio de Jexactyl
+    output "Descargando componentes visuales de Jexactyl..."
+    rm -rf /tmp/jexactyl_theme
+    mkdir -p /tmp/jexactyl_theme
+    cd /tmp/jexactyl_theme || return 1
+    
+    git clone --depth 1 https://github.com/Jexactyl/Jexactyl.git .
+
+    # 4. Copiar y reemplazar la carpeta de recursos de interfaz
+    output "Inyectando código del tema..."
+    cp -r /tmp/jexactyl_theme/resources/scripts/* /var/www/pterodactyl/resources/scripts/
+
+    # 5. Compilar assets de producción
+    output "Compilando nueva interfaz con Yarn (esto tomará unos minutos)..."
+    cd /var/www/pterodactyl || return 1
+    
+    export NODE_OPTIONS=--max_old_space_size=2048
+    yarn install
+    yarn build:production
+
+    # 6. Permisos y limpieza de caché de Laravel
+    output "Sincronizando permisos y limpiando caché de la app..."
+    chown -R www-data:www-data /var/www/pterodactyl/*
+    php artisan view:clear
+    php artisan cache:clear
+
+    # Limpieza de temporales
+    rm -rf /tmp/jexactyl_theme
+
+    output "======================================================"
+    output "  ¡Tema Jexactyl aplicado y compilado con éxito!      "
+    output "======================================================"
+}
 # ==============================
 # MENÚ PRINCIPAL
 # ==============================
@@ -4107,6 +4175,9 @@ while true; do
     ;;
   18) 
    menu_wireguard 
+  ;;
+  19) 
+  inject_jexactyl_theme
   ;;
 
   0)
